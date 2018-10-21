@@ -1,0 +1,15 @@
+# IntelliJ files
+.idea/
+*.iml
+
+# Eclipse files
+.settings/
+.classpath
+.project
+*.eml
+*.userlibraries
+
+# Web build ignore
+src/main/webapp/node_modules/
+src/main/webapp/static/js
+web/META-INF/
