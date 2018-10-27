@@ -8,13 +8,9 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import {createMuiTheme} from "@material-ui/core/es/styles";
 import Login from "./pages/Login";
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
-
+import Home from "./pages/Home";
 
 class Index extends React.Component {
-    static get base() {
-        return "/";
-    }
-
     render() {
         const theme = createMuiTheme({
             palette: {
@@ -48,16 +44,17 @@ class Index extends React.Component {
             }
         });
         return (
-            <React.Fragment>
+            <>
                 <CssBaseline/>
                 <MuiThemeProvider theme={theme}>
                     <BrowserRouter>
                         <Switch>
-                            <Route exact path={Index.base} component={Login}/>
+                            <Route exact path="/" component={Login}/>
+                            <Route path="/home" component={Home}/>
                         </Switch>
                     </BrowserRouter>
                 </MuiThemeProvider>
-            </React.Fragment>
+            </>
         );
     }
 }

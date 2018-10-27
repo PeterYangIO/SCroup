@@ -1,3 +1,9 @@
-body {
-    background: #fafafa;
+* {
+    box-sizing: border-box;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }

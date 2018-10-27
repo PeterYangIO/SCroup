@@ -17,6 +17,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import Divider from "@material-ui/core/Divider/Divider";
 import withStyles from "@material-ui/core/styles/withStyles";
+import {Link} from "react-router-dom";
 
 @withStyles({
     title: {
@@ -60,7 +61,7 @@ export default class HeaderBar extends React.Component {
 
         return (
             <div>
-                <AppBar position="static">
+                <AppBar position="sticky">
                     <Toolbar>
                         <IconButton color="inherit" onClick={this.handleDrawerOpen}>
                             <MenuIcon/>
@@ -93,7 +94,7 @@ export default class HeaderBar extends React.Component {
                                         </Menu>
                                     </div>
                                 )
-                                : <Button color="inherit">Login</Button>
+                                : <Button component={Link} to="/" color="inherit">Login</Button>
                         }
                     </Toolbar>
                 </AppBar>

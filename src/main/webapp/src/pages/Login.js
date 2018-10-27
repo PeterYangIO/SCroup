@@ -5,7 +5,7 @@ import AppBar from "@material-ui/core/AppBar/AppBar";
 import LoginForm from "../components/Login/LoginForm";
 import SignUpForm from "../components/Login/SignUpForm";
 import withStyles from "@material-ui/core/styles/withStyles";
-import HeaderBar from "./HeaderBar";
+import HeaderBar from "../components/common/HeaderBar";
 
 @withStyles({
     root: {
@@ -31,7 +31,7 @@ export default class Login extends React.Component {
         const {value} = this.state;
         const {classes} = this.props;
         return (
-            <React.Fragment>
+            <>
                 <HeaderBar title="Login"/>
                 <main>
                     <div className={classes.root}>
@@ -52,7 +52,7 @@ export default class Login extends React.Component {
                         }
                     </div>
                 </main>
-            </React.Fragment>
+            </>
         );
     }
 }
