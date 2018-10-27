@@ -27,19 +27,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
     }
 })
 export default class HeaderBar extends React.Component {
-    handleAccountMenuOpen = (event) => {
-        this.setState({anchorElement: event.currentTarget});
-    };
-    handleAccountMenuClose = () => {
-        this.setState({anchorElement: null});
-    };
-    handleDrawerOpen = () => {
-        this.setState({drawerOpen: true});
-    };
-    handleDrawerClose = () => {
-        this.setState({drawerOpen: false});
-    };
-
     constructor(props) {
         super(props);
 
@@ -50,9 +37,25 @@ export default class HeaderBar extends React.Component {
         }
     }
 
+    handleAccountMenuOpen = (event) => {
+        this.setState({anchorElement: event.currentTarget});
+    };
+
+    handleAccountMenuClose = () => {
+        this.setState({anchorElement: null});
+    };
+
+    handleDrawerOpen = () => {
+        this.setState({drawerOpen: true});
+    };
+
+    handleDrawerClose = () => {
+        this.setState({drawerOpen: false});
+    };
+
     render() {
         const {authorized, anchorElement, drawerOpen} = this.state;
-        const {classes} = this.props;
+        const {classes, title} = this.props;
         const accountMenuOpen = Boolean(anchorElement);
 
         return (
@@ -63,7 +66,7 @@ export default class HeaderBar extends React.Component {
                             <MenuIcon/>
                         </IconButton>
                         <Typography component="h6" variant="h6" color="inherit" className={classes.title}>
-                            SCroup
+                            {title}
                         </Typography>
                         {
                             authorized

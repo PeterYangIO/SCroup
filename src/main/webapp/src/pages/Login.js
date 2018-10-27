@@ -8,16 +8,12 @@ import withStyles from "@material-ui/core/styles/withStyles";
 
 @withStyles({
     root: {
-        maxWidth: "500px",
+        maxWidth: "400px",
         margin: "auto",
         marginTop: "2rem"
     }
 })
 export default class Login extends React.Component {
-    handleTabChange = (event, value) => {
-        this.setState({value});
-    };
-
     constructor(props) {
         super(props);
 
@@ -25,6 +21,10 @@ export default class Login extends React.Component {
             value: 0
         };
     }
+
+    handleTabChange = (event, value) => {
+        this.setState({value});
+    };
 
     render() {
         const {value} = this.state;
