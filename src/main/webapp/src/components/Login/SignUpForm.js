@@ -10,13 +10,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
     container: {
         borderTopRightRadius: 0,
         borderTopLeftRadius: 0
-    },
-    input: {
-        width: "100%",
-        paddingBottom: "0.5rem"
-    },
-    buttons: {
-        justifyContent: "flex-end"
     }
 })
 export default class SignUpForm extends React.Component {
@@ -48,45 +41,39 @@ export default class SignUpForm extends React.Component {
                 <Card className={classes.container}>
                     <CardContent>
                         <TextField
-                            className={classes.input}
                             type="email"
                             label="Email"
                             name="email"
                             value={email}
                             onChange={this.handleChange}/>
                         <TextField
-                            className={classes.input}
                             type="password"
                             label="Password"
                             name="password"
                             value={password}
                             onChange={this.handleChange}/>
                         <TextField
-                            className={classes.input}
                             label="First Name"
                             name="first_name"
                             value={first_name}
                             onChange={this.handleChange}/>
                         <TextField
-                            className={classes.input}
                             label="Last Name"
                             name="last_name"
                             value={last_name}
                             onChange={this.handleChange}/>
                         <TextField
-                            className={classes.input}
                             label="Year"
                             name="year"
                             value={year}
                             onChange={this.handleChange}/>
                         <TextField
-                            className={classes.input}
                             label="Major"
                             name="major"
                             value={major}
                             onChange={this.handleChange}/>
                     </CardContent>
-                    <CardActions className={classes.buttons}>
+                    <CardActions>
                         <Button variant="contained" color="primary">Sign Up</Button>
                     </CardActions>
                 </Card>

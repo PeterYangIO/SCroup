@@ -31,7 +31,7 @@ export default class HeaderBar extends React.Component {
         super(props);
 
         this.state = {
-            authorized: false,
+            authorized: sessionStorage.getItem("accessToken") !== null,
             anchorElement: null,
             drawerOpen: false
         }
@@ -101,8 +101,7 @@ export default class HeaderBar extends React.Component {
                 <Drawer
                     anchor="left"
                     open={drawerOpen}
-                    onClose={this.handleDrawerClose}
-                >
+                    onClose={this.handleDrawerClose}>
                     <Typography component="h1" variant="h6" className={classes.logo}>Logo</Typography>
                     <Divider/>
                     <List component="nav">

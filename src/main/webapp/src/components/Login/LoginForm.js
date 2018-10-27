@@ -11,16 +11,24 @@ import NetworkRequest from "../../util/NetworkRequest";
     container: {
         borderTopRightRadius: 0,
         borderTopLeftRadius: 0
-    },
-    input: {
-        width: "100%",
-        paddingBottom: "0.5rem"
-    },
-    buttons: {
-        justifyContent: "flex-end"
     }
 })
 export default class LoginForm extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            email: "",
+            password: ""
+        };
+    }
+
+    handleChange = (event) => {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
+    };
+
     submit = async (event) => {
         event.preventDefault();
 
@@ -37,21 +45,6 @@ export default class LoginForm extends React.Component {
         }
     };
 
-    handleChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    };
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            email: "",
-            password: ""
-        };
-    }
-
     render() {
         const {email, password} = this.state;
         const {classes} = this.props;
@@ -61,21 +54,19 @@ export default class LoginForm extends React.Component {
                 <Card className={classes.container}>
                     <CardContent>
                         <TextField
-                            className={classes.input}
                             type="email"
                             label="Email"
                             name="email"
                             value={email}
                             onChange={this.handleChange}/>
                         <TextField
-                            className={classes.input}
                             type="password"
                             label="Password"
                             name="password"
                             value={password}
                             onChange={this.handleChange}/>
                     </CardContent>
-                    <CardActions className={classes.buttons}>
+                    <CardActions>
                         <Button>Continue as a Guest</Button>
                         <Button variant="contained" color="primary" type="submit">Login</Button>
                     </CardActions>
