@@ -11,6 +11,7 @@
 
 # Web build ignore
 src/main/webapp/node_modules/
+src/main/webapp/package-lock.json
 src/main/webapp/static/js
 web/META-INF/
 /target/
