@@ -25,7 +25,10 @@ export default class CreateFab extends React.Component {
     }
 
     handleClickOpen = () => {
-        this.setState({open: true});
+        this.setState({
+            open: true,
+            tab: this.props.selectedCourse === undefined ? 0 : 1
+        });
     };
 
     handleClose = () => {
