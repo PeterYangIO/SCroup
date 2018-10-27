@@ -36,7 +36,7 @@ public class User {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT * FROM user WHERE id=?"
+                "SELECT * FROM users WHERE id=?"
             );
             statement.setInt(1, id);
 
