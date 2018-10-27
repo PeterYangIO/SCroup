@@ -16,7 +16,16 @@ import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import Divider from "@material-ui/core/Divider/Divider";
+import withStyles from "@material-ui/core/styles/withStyles";
 
+@withStyles({
+    title: {
+        flexGrow: 1
+    },
+    logo: {
+        margin: "1rem"
+    }
+})
 export default class HeaderBar extends React.Component {
     handleAccountMenuOpen = (event) => {
         this.setState({anchorElement: event.currentTarget});
@@ -43,6 +52,7 @@ export default class HeaderBar extends React.Component {
 
     render() {
         const {authorized, anchorElement, drawerOpen} = this.state;
+        const {classes} = this.props;
         const accountMenuOpen = Boolean(anchorElement);
 
         return (
@@ -52,7 +62,7 @@ export default class HeaderBar extends React.Component {
                         <IconButton color="inherit" onClick={this.handleDrawerOpen}>
                             <MenuIcon/>
                         </IconButton>
-                        <Typography component="h6" variant="h6" color="inherit" style={{flexGrow: 1}}>
+                        <Typography component="h6" variant="h6" color="inherit" className={classes.title}>
                             SCroup
                         </Typography>
                         {
@@ -90,7 +100,7 @@ export default class HeaderBar extends React.Component {
                     open={drawerOpen}
                     onClose={this.handleDrawerClose}
                 >
-                    <Typography component="h1" variant="h6" style={{margin: "1rem"}}>Logo</Typography>
+                    <Typography component="h1" variant="h6" className={classes.logo}>Logo</Typography>
                     <Divider/>
                     <List component="nav">
                         <ListItem button>

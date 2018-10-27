@@ -4,7 +4,15 @@ import Tab from "@material-ui/core/Tab/Tab";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import LoginForm from "../components/Login/LoginForm";
 import SignUpForm from "../components/Login/SignUpForm";
+import withStyles from "@material-ui/core/styles/withStyles";
 
+@withStyles({
+    root: {
+        maxWidth: "500px",
+        margin: "auto",
+        marginTop: "2rem"
+    }
+})
 export default class Login extends React.Component {
     handleTabChange = (event, value) => {
         this.setState({value});
@@ -20,12 +28,9 @@ export default class Login extends React.Component {
 
     render() {
         const {value} = this.state;
+        const {classes} = this.props;
         return (
-            <div style={{
-                width: "50%",
-                margin: "auto",
-                marginTop: "2rem"
-            }}>
+            <div className={classes.root}>
                 <AppBar position="static" color="secondary">
                     <Tabs
                         value={value}
