@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS studyGroups;
-CREATE TABLE studyGroups (
+DROP TABLE IF EXISTS studygroups;
+CREATE TABLE studygroups (
   id        INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   courseId  INT NOT NULL,
   ownerId   INT NOT NULL,
