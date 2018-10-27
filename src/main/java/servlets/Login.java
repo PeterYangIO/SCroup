@@ -20,6 +20,8 @@ public class Login extends HttpServlet {
         User user = new User(email, password);
         Gson gson = new Gson();
         response.setContentType("application/json");
+
+        System.out.println(User.selectUser(1));
         response.getWriter().print(gson.toJson(user));
     }
 }
