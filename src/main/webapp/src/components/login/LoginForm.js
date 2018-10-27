@@ -42,17 +42,22 @@ export default class LoginForm extends React.Component {
         formData.append("email", this.state.email);
         formData.append("password", this.state.password);
 
-        const response = await NetworkRequest.post("api/login", formData, false);
-        if (response.ok) {
-            // const data = await response.json();
-            // sessionStorage.setItem("accessToken", data.accessToken);
-            this.props.history.push("/home");
+        try {
+            const response = await NetworkRequest.post("api/login", formData, false);
+            if (response.ok) {
+                // const data = await response.json();
+                // sessionStorage.setItem("accessToken", data.accessToken);
+                this.props.history.push("/home");
+            }
+            else if (response.status === 401) {
+                alert("Invalid credentials");
+            }
+            else {
+                alert("Unknown error");
+            }
         }
-        else if (response.status === 401) {
-            alert("Invalid credentials");
-        }
-        else {
-            alert("Server error");
+        catch (exception) {
+            console.error(exception);
         }
     };
 
