@@ -29,9 +29,10 @@ import {fade} from "@material-ui/core/styles/colorManipulator";
     coursesList: {
         overflowY: "scroll"
     },
-    groups: {
+    groupsContainer: {
         flexGrow: 3,
-        padding: "1rem"
+        padding: "2rem",
+        overflowY: "scroll"
     },
     loading: {
         display: "flex",
@@ -177,8 +178,11 @@ export default class Home extends React.Component {
                                                         </ListSubheader>
                                                         {
                                                             this.state.departments[department].map((course, j) => (
-                                                                <ListItem key={j} button
-                                                                          onClick={() => this.selectCourse(course.id)}>
+                                                                <ListItem
+                                                                    key={j}
+                                                                    button
+                                                                    selected={this.state.selectedCourse !== undefined && this.state.selectedCourse.id === course.id}
+                                                                    onClick={() => this.selectCourse(course)}>
                                                                     <ListItemText
                                                                         primary={`${course.department}-${course.number}`}
                                                                         secondary={course.name}/>
@@ -193,11 +197,11 @@ export default class Home extends React.Component {
                             }
                         </div>
                     </div>
-                    <section className={classes.groups}>
-                        <StudyGroups courseId={this.state.selectedCourse}/>
+                    <section className={classes.groupsContainer}>
+                        <StudyGroups course={this.state.selectedCourse}/>
                     </section>
                 </main>
-                <CreateFab selectedCourse={this.state.selectedCourse}/>;
+                <CreateFab course={this.state.selectedCourse}/>;
             </>
         );
     }
