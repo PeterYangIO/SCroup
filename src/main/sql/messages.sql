@@ -8,5 +8,5 @@ CREATE TABLE messages (
   pinned BOOLEAN NOT NULL,
 
   FOREIGN KEY (user_id) REFERENCES users (id),
-  FOREIGN KEY (group_id) REFERENCES studyGroups (id)
+  FOREIGN KEY (group_id) REFERENCES studygroups (id)
 );
