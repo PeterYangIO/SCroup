@@ -232,7 +232,7 @@ export default class CreateFab extends React.Component {
                                         value={this.state.start}
                                         onChange={this.handleChange}
                                         InputLabelProps={{
-                                            shrink: true,
+                                            shrink: true
                                         }}/>
                                     <TextField
                                         className={classes.half}
@@ -242,7 +242,7 @@ export default class CreateFab extends React.Component {
                                         value={this.state.end}
                                         onChange={this.handleChange}
                                         InputLabelProps={{
-                                            shrink: true,
+                                            shrink: true
                                         }}/>
                                 </>
                             )
