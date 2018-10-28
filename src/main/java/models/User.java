@@ -151,6 +151,8 @@ public class User {
     }
     
     // log out a user with authorization token
+    // Note: once log out on one machine, all machines of that account will be logged out
+    // because the auth token is reset to null.
     public static boolean onLogOut(String authToken) {
         boolean success = false;
         SQLConnection sql = new SQLConnection();
@@ -190,6 +192,10 @@ public class User {
 
     // Use authorization token to get access to user object
     public static User lookUpByAuthToken(String authToken) {
+    	if (authToken.isEmpty()) {
+    		return null;
+    	}
+    	
         User user = null;
         SQLConnection sql = new SQLConnection();
 
