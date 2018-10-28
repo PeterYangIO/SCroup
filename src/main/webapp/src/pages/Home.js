@@ -201,7 +201,15 @@ export default class Home extends React.Component {
                         <StudyGroups course={this.state.selectedCourse}/>
                     </section>
                 </main>
-                <CreateFab course={this.state.selectedCourse}/>;
+
+                {
+                    sessionStorage.getItem("accessToken")
+                    && (
+                        <CreateFab
+                        course={this.state.selectedCourse}
+                        departments={this.state.departments}/>
+                    )
+                }
             </>
         );
     }
