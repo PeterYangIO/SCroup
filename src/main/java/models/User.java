@@ -210,13 +210,13 @@ public class User {
             ResultSet results = sql.getResults();
             if (results.next()) {
                 user = new User(
-                    results.getInt(1),
-                    results.getString(2),
-                    results.getString(3),
-                    results.getString(4),
-                    results.getString(5),
-                    results.getInt(6),
-                    results.getString(7)
+            		 results.getInt("id"),
+                     results.getString("email"),
+                     results.getString("password"),
+                     results.getString("firstName"),
+                     results.getString("lastName"),
+                     results.getInt("year"),
+                     results.getString("major")
                 );
             }
         }
