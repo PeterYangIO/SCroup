@@ -27,6 +27,7 @@ import {fade} from "@material-ui/core/styles/colorManipulator";
         flexDirection: "column"
     },
     coursesList: {
+        height: "100%",
         overflowY: "scroll"
     },
     groupsContainer: {

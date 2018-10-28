@@ -74,9 +74,28 @@ export default class StudyGroups extends React.Component {
 
     getData = async () => {
         try {
-            const response = await NetworkRequest.get("/api/study-groups", {
+            const {capacityMin, capacityMax, hideFull, location, topic, professor, after, before} = this.state;
+            const filterParameters = {
                 courseId: this.props.course.id
-            });
+            };
+            if (typeof(capacityMin) === "number")
+                filterParameters.capacityMin = capacityMin;
+            if (typeof(capacityMax) === "number")
+                filterParameters.capacityMax = capacityMax;
+            if (hideFull)
+                filterParameters.hideFull = hideFull;
+            if (location)
+                filterParameters.location = location;
+            if (typeof(topic) === "number")
+                filterParameters.topic = topic;
+            if (professor)
+                filterParameters.professor = professor;
+            if (after)
+                filterParameters.after = new Date(after).toISOString();
+            if (before)
+                filterParameters.before = new Date(before).toISOString();
+
+            const response = await NetworkRequest.get("/api/study-groups", filterParameters);
             if (response.ok) {
                 const studyGroups = await response.json();
                 this.setState({studyGroups})
