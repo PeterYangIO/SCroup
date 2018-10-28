@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  group_id INT NOT NULL,
+  title VARCHAR(128) NOT NULL,
+  location VARCHAR(128) NOT NULL,
+  start TIMESTAMP NOT NULL,
+  end TIMESTAMP NOT NULL,
+
+  FOREIGN KEY (group_id) REFERENCES studyGroups (id)
+);
