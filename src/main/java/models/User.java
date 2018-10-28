@@ -276,4 +276,25 @@ public class User {
     	String token = bytes.toString();
     	return token;
     }
+    
+    // Getter functions
+    public String getEmail() {
+    	return this.email;
+    }
+    
+    public String getFName() {
+    	return this.firstName;
+    }
+    
+    public String getLName() {
+    	return this.lastName;
+    }
+    
+    public String getMajor() {
+    	return this.major;
+    }
+    
+    public int getYear() {
+    	return this.year;
+    }
 }
