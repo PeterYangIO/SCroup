@@ -1,18 +1,16 @@
+import "@babel/polyfill";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 
-import HeaderBar from "./pages/HeaderBar";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import {createMuiTheme} from "@material-ui/core/es/styles";
 import Login from "./pages/Login";
-
+import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
+import Home from "./pages/Home";
 
 class Index extends React.Component {
-    static get base() {
-        return "/";
-    }
-
     render() {
         const theme = createMuiTheme({
             palette: {
@@ -25,19 +23,38 @@ class Index extends React.Component {
             },
             typography: {
                 useNextVariants: true
+            },
+            overrides: {
+                MuiFormControl: {
+                    root: {
+                        width: "100%"
+                    }
+                },
+                MuiInput: {
+                    root: {
+                        width: "100%",
+                        marginBottom: "0.5rem"
+                    }
+                },
+                MuiCardActions: {
+                    root: {
+                        justifyContent: "flex-end"
+                    }
+                }
             }
         });
         return (
-            <MuiThemeProvider theme={theme}>
-                <HeaderBar/>
-                <main>
+            <>
+                <CssBaseline/>
+                <MuiThemeProvider theme={theme}>
                     <BrowserRouter>
                         <Switch>
-                            <Route exact path={Index.base} component={Login}/>
+                            <Route exact path="/" component={Login}/>
+                            <Route path="/home" component={Home}/>
                         </Switch>
                     </BrowserRouter>
-                </main>
-            </MuiThemeProvider>
+                </MuiThemeProvider>
+            </>
         );
     }
 }

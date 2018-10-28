@@ -4,14 +4,15 @@ import Button from "@material-ui/core/Button/Button";
 import Card from "@material-ui/core/Card/Card";
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import CardActions from "@material-ui/core/CardActions/CardActions";
+import withStyles from "@material-ui/core/styles/withStyles";
 
+@withStyles({
+    container: {
+        borderTopRightRadius: 0,
+        borderTopLeftRadius: 0
+    }
+})
 export default class SignUpForm extends React.Component {
-    handleChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    };
-
     constructor(props) {
         super(props);
 
@@ -25,12 +26,19 @@ export default class SignUpForm extends React.Component {
         };
     }
 
+    handleChange = (event) => {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
+    };
+
     render() {
         const {email, password, first_name, last_name, year, major} = this.state;
+        const {classes} = this.props;
 
         return (
             <form>
-                <Card>
+                <Card className={classes.container}>
                     <CardContent>
                         <TextField
                             type="email"

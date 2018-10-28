@@ -16,44 +16,58 @@ import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import Divider from "@material-ui/core/Divider/Divider";
+import withStyles from "@material-ui/core/styles/withStyles";
+import {Link} from "react-router-dom";
 
+@withStyles({
+    title: {
+        flexGrow: 1
+    },
+    logo: {
+        margin: "1rem"
+    }
+})
 export default class HeaderBar extends React.Component {
-    handleAccountMenuOpen = (event) => {
-        this.setState({anchorElement: event.currentTarget});
-    };
-    handleAccountMenuClose = () => {
-        this.setState({anchorElement: null});
-    };
-    handleDrawerOpen = () => {
-        this.setState({drawerOpen: true});
-    };
-    handleDrawerClose = () => {
-        this.setState({drawerOpen: false});
-    };
-
     constructor(props) {
         super(props);
 
         this.state = {
-            authorized: false,
+            authorized: sessionStorage.getItem("accessToken") !== null,
             anchorElement: null,
             drawerOpen: false
         }
     }
 
+    handleAccountMenuOpen = (event) => {
+        this.setState({anchorElement: event.currentTarget});
+    };
+
+    handleAccountMenuClose = () => {
+        this.setState({anchorElement: null});
+    };
+
+    handleDrawerOpen = () => {
+        this.setState({drawerOpen: true});
+    };
+
+    handleDrawerClose = () => {
+        this.setState({drawerOpen: false});
+    };
+
     render() {
         const {authorized, anchorElement, drawerOpen} = this.state;
+        const {classes, title} = this.props;
         const accountMenuOpen = Boolean(anchorElement);
 
         return (
             <div>
-                <AppBar position="static">
+                <AppBar position="sticky">
                     <Toolbar>
                         <IconButton color="inherit" onClick={this.handleDrawerOpen}>
                             <MenuIcon/>
                         </IconButton>
-                        <Typography component="h6" variant="h6" color="inherit" style={{flexGrow: 1}}>
-                            SCroup
+                        <Typography component="h6" variant="h6" color="inherit" className={classes.title}>
+                            {title}
                         </Typography>
                         {
                             authorized
@@ -80,7 +94,7 @@ export default class HeaderBar extends React.Component {
                                         </Menu>
                                     </div>
                                 )
-                                : <Button color="inherit">Login</Button>
+                                : <Button component={Link} to="/" color="inherit">Login</Button>
                         }
                     </Toolbar>
                 </AppBar>
@@ -88,9 +102,8 @@ export default class HeaderBar extends React.Component {
                 <Drawer
                     anchor="left"
                     open={drawerOpen}
-                    onClose={this.handleDrawerClose}
-                >
-                    <Typography component="h1" variant="h6" style={{margin: "1rem"}}>Logo</Typography>
+                    onClose={this.handleDrawerClose}>
+                    <Typography component="h1" variant="h6" className={classes.logo}>Logo</Typography>
                     <Divider/>
                     <List component="nav">
                         <ListItem button>

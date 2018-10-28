@@ -4,12 +4,17 @@ import Tab from "@material-ui/core/Tab/Tab";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import LoginForm from "../components/Login/LoginForm";
 import SignUpForm from "../components/Login/SignUpForm";
+import withStyles from "@material-ui/core/styles/withStyles";
+import HeaderBar from "../components/common/HeaderBar";
 
+@withStyles({
+    root: {
+        maxWidth: "400px",
+        margin: "auto",
+        marginTop: "2rem"
+    }
+})
 export default class Login extends React.Component {
-    handleTabChange = (event, value) => {
-        this.setState({value});
-    };
-
     constructor(props) {
         super(props);
 
@@ -18,30 +23,36 @@ export default class Login extends React.Component {
         };
     }
 
+    handleTabChange = (event, value) => {
+        this.setState({value});
+    };
+
     render() {
         const {value} = this.state;
+        const {classes} = this.props;
         return (
-            <div style={{
-                width: "50%",
-                margin: "auto",
-                marginTop: "2rem"
-            }}>
-                <AppBar position="static" color="secondary">
-                    <Tabs
-                        value={value}
-                        onChange={this.handleTabChange}
-                        indicatorColor="primary">
-                        <Tab label="Login"/>
-                        <Tab label="Sign Up"/>
-                    </Tabs>
-                </AppBar>
-                {
-                    value === 0 && <LoginForm/>
-                }
-                {
-                    value === 1 && <SignUpForm/>
-                }
-            </div>
+            <>
+                <HeaderBar title="Login"/>
+                <main>
+                    <div className={classes.root}>
+                        <AppBar position="static" color="secondary">
+                            <Tabs
+                                value={value}
+                                onChange={this.handleTabChange}
+                                indicatorColor="primary">
+                                <Tab label="Login"/>
+                                <Tab label="Sign Up"/>
+                            </Tabs>
+                        </AppBar>
+                        {
+                            value === 0 && <LoginForm/>
+                        }
+                        {
+                            value === 1 && <SignUpForm/>
+                        }
+                    </div>
+                </main>
+            </>
         );
     }
 }
