@@ -22,7 +22,7 @@ public class StudyGroup {
     private Timestamp start;
     private Timestamp end;
 
-    private StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
+    StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
                String location, int topic, String professor,
                Timestamp start, Timestamp end) {
         this.id = id;
