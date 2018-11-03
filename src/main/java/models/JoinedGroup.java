@@ -26,7 +26,7 @@ public class JoinedGroup {
      * @param userId user.id
      * @return All study groups the user is in
      */
-    static ArrayList<StudyGroup> dbSelectByUser(int userId) {
+    public static ArrayList<StudyGroup> dbSelectByUser(int userId) {
         ArrayList<StudyGroup> studyGroups = new ArrayList<>();
         SQLConnection sql = new SQLConnection();
 
@@ -77,7 +77,7 @@ public class JoinedGroup {
      * @param groupId studygroup.id
      * @return All users in a specific study group
      */
-    static ArrayList<User> dbSelectByGroup(int groupId) {
+    public static ArrayList<User> dbSelectByGroup(int groupId) {
         ArrayList<User> users = new ArrayList<>();
         SQLConnection sql = new SQLConnection();
 
@@ -124,7 +124,7 @@ public class JoinedGroup {
      *
      * @return true if success
      */
-    boolean dbInsert() {
+    public boolean dbInsert() {
         boolean success = true;
         SQLConnection sql = new SQLConnection();
 
@@ -160,7 +160,7 @@ public class JoinedGroup {
      *
      * @return true if successful
      */
-    boolean dbDelete() {
+    public boolean dbDelete() {
         boolean success = true;
         SQLConnection sql = new SQLConnection();
 
