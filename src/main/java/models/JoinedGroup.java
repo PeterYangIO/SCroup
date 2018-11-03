@@ -119,7 +119,8 @@ public class JoinedGroup {
     }
 
     /**
-     * Inserts a join connection for a user into a group
+     * Inserts a join connection for a user into a group provided
+     * the user is not already in the group
      *
      * @return true if success
      */
@@ -129,10 +130,16 @@ public class JoinedGroup {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "INSERT INTO joinedgroups (userId, groupId) VALUES (?, ?)"
+                "INSERT INTO joinedgroups (userId, groupId)" +
+                    " SELECT ?, ?" +
+                    " FROM joinedgroups" +
+                    " WHERE userId=? AND groupId=?" +
+                    " HAVING COUNT(*) = 0"
             );
             statement.setInt(1, this.userId);
             statement.setInt(2, this.groupId);
+            statement.setInt(3, this.userId);
+            statement.setInt(4, this.groupId);
 
             sql.setStatement(statement);
             sql.executeUpdate();
