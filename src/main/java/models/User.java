@@ -220,7 +220,7 @@ public class User {
 
             statement.setString(1, hashedPassword);
             statement.setString(2, null);
-            statement.setString(2, this.email);
+            statement.setString(3, this.email);
             sql.setStatement(statement);
             sql.executeUpdate();
         }
