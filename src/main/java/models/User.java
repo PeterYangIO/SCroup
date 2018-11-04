@@ -94,16 +94,43 @@ public class User {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT * FROM users WHERE email=? AND password = ?"
+                "SELECT * FROM users WHERE email=?"
             );
             
             statement.setString(1, this.email);
-            statement.setString(2, this.password);
 
             sql.setStatement(statement);
             sql.executeQuery();
             ResultSet results = sql.getResults();
             if (results.next()) {
+            	byte[] salt = results.getBytes("salt");
+            	String hashedPassword = generateSecurePassword(this.password, salt);
+            	String tempPassword = results.getString("tempPassword");
+            	String permPassword = results.getString("password");
+            	Boolean authorized = false;
+            	if (tempPassword != null) {
+            		// If log in with temporary password, then update temporary to permanent password
+            		if (tempPassword.equals(hashedPassword)) {
+            			authorized = true;
+            			updatePassword();
+            		}
+            	}
+            	
+            	if (!authorized) {
+            		if (permPassword.equals(hashedPassword)) {
+            			authorized = true;
+            			// Erase temporary password if log in with permanent password
+            			if (tempPassword != null) {
+            				updatePassword();
+            			}
+            		}
+            	}
+            	
+            	if (!authorized) {
+            		return null;
+            	}
+         
+            	
             	String token = results.getString("authToken");
             	// No update token if available
             	if (token != null) {
@@ -114,7 +141,8 @@ public class User {
                 		statement = sql.prepareStatement(
                            "SELECT * FROM users WHERE authToken = ?"
                         );
-                		token = generateTemporaryAccessToken();
+                		// Generate random string with length 256 as temporary access token
+                		token = generateRandomString(256);
                 		statement.setString(1, token);
                 		sql.setStatement(statement);
                         sql.executeQuery();
@@ -148,6 +176,62 @@ public class User {
         }
         
         return returnedToken;
+    }
+    
+    // Update password
+    public boolean updatePassword() {
+    	boolean success = true;
+        SQLConnection sql = new SQLConnection();
+        byte[] salt = null;
+        
+        // Get salt
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "SELECT * FROM users WHERE email=?"
+            );
+            
+            statement.setString(1, this.email);
+
+            sql.setStatement(statement);
+            sql.executeQuery();
+            ResultSet results = sql.getResults();
+            if (results.next()) {
+            	salt = results.getBytes("salt");
+            }else {
+            	return false;
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            sql.close();
+        }
+
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "UPDATE users " +
+                    "SET password=?, tempPassword=? " +
+                    "WHERE email=?"
+            );
+            
+            String hashedPassword = generateSecurePassword(this.password, salt);
+
+            statement.setString(1, hashedPassword);
+            statement.setString(2, null);
+            statement.setString(2, this.email);
+            sql.setStatement(statement);
+            sql.executeUpdate();
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+            success = false;
+        }
+        finally {
+            sql.close();
+        }
+
+        return success;
     }
     
     // log out a user with authorization token
@@ -188,6 +272,68 @@ public class User {
         }
 
         return success;
+    }
+    
+    public static void forgetPassword(String email) {
+    	String tempPassword = generateRandomString(20);
+    	
+    	SQLConnection sql = new SQLConnection();
+        byte[] salt = null;
+        
+        // Get salt
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "SELECT * FROM users WHERE email=?"
+            );
+            
+            statement.setString(1, email);
+
+            sql.setStatement(statement);
+            sql.executeQuery();
+            ResultSet results = sql.getResults();
+            if (results.next()) {
+            	salt = results.getBytes("salt");
+            }else {
+            	return;
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            sql.close();
+        }
+
+        // Set temporary password
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "UPDATE users " +
+                    "SET tempPassword=? " +
+                    "WHERE email=?"
+            );
+            
+            String hashedPassword = generateSecurePassword(tempPassword, salt);
+
+            statement.setString(1, hashedPassword);
+            statement.setString(2, email);
+            sql.setStatement(statement);
+            sql.executeUpdate();
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            sql.close();
+        }
+    	
+        // Send email
+       EmailSender.sendMessage(email, "Forget Password Confirmation from SCroup", 
+    		   "Dear customer:\n" + 
+    		   	"\tYou recently sent a forget password request on our SCroup website.\n" +
+    		   	"Your temporary password is: " + tempPassword + 
+    		   	"\n If you didn't send such a request, please reset your password as soon as possible. The original password can still be used to log in your account." +
+    		   	"\n\nRegards,\nScroup Support Team"); 
+        
     }
 
     // Use authorization token to get access to user object
@@ -269,9 +415,9 @@ public class User {
     }
     
     // https://www.tutorialspoint.com/java/util/random_nextbytes.htm
-    private static String generateTemporaryAccessToken() {
+    private static String generateRandomString(int length) {
     	SecureRandom random = new SecureRandom();
-    	byte bytes[] = new byte[256];
+    	byte bytes[] = new byte[length];
     	random.nextBytes(bytes);
     	String token = bytes.toString();
     	return token;
