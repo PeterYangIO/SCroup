@@ -39,7 +39,6 @@ public class Course {
         SQLConnection sql = new SQLConnection();
 
         try {
-            // Join the sql filters with "AND"
             String statement = "SELECT DISTINCT * FROM courses "; 
             
             // add all of the search parameters to the statement
@@ -103,7 +102,7 @@ public class Course {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "INSERT INTO course " +
+                "INSERT INTO courses " +
                     "(department, number, name) " +
                     "VALUES (?, ?, ?,)"
             );
@@ -136,7 +135,7 @@ public class Course {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "UPDATE course " +
+                "UPDATE courses " +
                     "SET department=?, number=?, name=?" +
                     "WHERE id=?"
             );
@@ -144,6 +143,7 @@ public class Course {
             statement.setString(1, this.department);
             statement.setInt(2, this.number);
             statement.setString(3, this.name);
+            statement.setInt(3, this.id);
 
 
             sql.setStatement(statement);
