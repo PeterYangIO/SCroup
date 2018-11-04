@@ -42,21 +42,27 @@ public class Course {
             // Join the sql filters with "AND"
             String statement = "SELECT DISTINCT * FROM courses "; 
             
-            // add all of the search parameters to the string
+            // add all of the search parameters to the statement
             for (int i = 0; i< Params.length;i++) {
             	
             	if(i==0) {
             		statement += "WHERE ";
             	}
             	String toAdd = Params[i];
-            	statement +=  "department LIKE " + toAdd + " ";
-            	statement +=  "number LIKE " + toAdd + " ";
-            	if(i == (Params.length-1))
-            	statement +=  "name LIKE " + toAdd + " ";
-            }
+            	statement +=  "department LIKE " + toAdd + " OR ";
+            	statement +=  "number LIKE " + toAdd + " OR ";
+            	if(i == (Params.length-1)) {
+            		statement +=  "name LIKE " + toAdd;
+            	}
+            	else {
+            		statement +=  "name LIKE " + toAdd + " OR ";
+            	}
 
-            // Execute the statement and serialize the result set into ArrayList<StudyGroup>
-            sql.setStatement(statement);
+            }
+            PreparedStatement ps = sql.prepareStatement(statement);
+            
+            // Execute the statement and serialize the result set into ArrayList<Courses>
+            sql.setStatement(ps);
             sql.executeQuery();
             ResultSet results = sql.getResults();
             while (results.next()) {
@@ -153,4 +159,4 @@ public class Course {
 
         return success;
     }
-
+}
