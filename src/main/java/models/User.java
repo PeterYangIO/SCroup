@@ -235,6 +235,37 @@ public class User {
         return success;
     }
     
+    // Update profile
+    public boolean updateProfile() {
+    	boolean success = true;
+        SQLConnection sql = new SQLConnection();
+
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "UPDATE users " +
+                    "SET firstName, lastName, year, major " +
+                    "WHERE email=?"
+            );
+
+            statement.setString(1, this.firstName);
+            statement.setString(2, this.lastName);
+            statement.setInt(3, this.year);
+            statement.setString(4, this.major);
+            statement.setString(5, this.email);
+            sql.setStatement(statement);
+            sql.executeUpdate();
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+            success = false;
+        }
+        finally {
+            sql.close();
+        }
+
+        return success;
+    }
+    
     // log out a user with authorization token
     // Note: once log out on one machine, all machines of that account will be logged out
     // because the auth token is reset to null.
@@ -443,5 +474,22 @@ public class User {
     
     public int getYear() {
     	return this.year;
+    }
+    
+    // Setter functions    
+    public void setFName(String fName) {
+    	this.firstName = fName;
+    }
+    
+    public void setLName(String lName) {
+    	this.lastName = lName;
+    }
+    
+    public void setMajor(String m) {
+    	this.major = m;
+    }
+    
+    public void setYear(int y) {
+    	this.year = y;
     }
 }
