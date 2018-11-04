@@ -20,8 +20,9 @@ public class Login extends HttpServlet {
         User user = new User(email, password);
         Gson gson = new Gson();
         response.setContentType("application/json");
+        String token = user.authenticate();
 
-        System.out.println(User.selectUser(1));
+        System.out.println(User.lookUpByAuthToken(token));
         response.getWriter().print(gson.toJson(user));
     }
 }
