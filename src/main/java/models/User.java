@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import util.SQLConnection;
+import util.EmailSender;
 
 public class User {
     private int id;
