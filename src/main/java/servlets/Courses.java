@@ -40,7 +40,7 @@ public class Courses extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-       String query = request.getParameter();
+       String query = request.getParameter("query");
        
        try {
     	    String[] Params = query.split("\\s+");
