@@ -55,7 +55,9 @@ public class StudyGroups extends HttpServlet {
             return;
         }
 
-        ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams);
+        // TODO authentication and userId
+        int userId = 1;
+        ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
         Gson gson = new Gson();
         response.setContentType("application/json");
         response.getWriter().print(gson.toJson(studyGroups));

@@ -21,10 +21,12 @@ public class StudyGroup {
     private String professor;
     private Timestamp start;
     private Timestamp end;
+    // joined is not a normalized database entry - it's a generated value by checking the joinedgroups table
+    private boolean joined;
 
-    private StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
+    StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
                String location, int topic, String professor,
-               Timestamp start, Timestamp end) {
+               Timestamp start, Timestamp end, boolean joined) {
         this.id = id;
         this.courseId = courseId;
         this.ownerId = ownerId;
@@ -35,6 +37,7 @@ public class StudyGroup {
         this.professor = professor;
         this.start = start;
         this.end = end;
+        this.joined = joined;
     }
 
     /**
@@ -50,9 +53,10 @@ public class StudyGroup {
      *      before: optional start <= value
      *
      * @param filterParams from http query parameters
+     * @param userId used to check if user is joined to the group
      * @return All study groups that math the filter parameters
      */
-    public static ArrayList<StudyGroup> dbSelect(Map<String, String> filterParams) {
+    public static ArrayList<StudyGroup> dbSelect(Map<String, String> filterParams, int userId) {
         ArrayList<StudyGroup> studyGroups = new ArrayList<>();
         SQLConnection sql = new SQLConnection();
 
@@ -87,11 +91,14 @@ public class StudyGroup {
         try {
             // Join the sql filters with "AND"
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT * FROM studygroups WHERE " + String.join(" AND ", sqlFilters)
+                "SELECT *, " +
+                    "(SELECT COUNT(*) FROM joinedgroups WHERE userId=? AND groupId=studygroups.id) AS joined " +
+                    "FROM studygroups WHERE " + String.join(" AND ", sqlFilters)
             );
 
             // Parse the values to the correct type and match to the prepared statement
-            int i = 1;
+            statement.setInt(1, userId);
+            int i = 2;
             for (Map.Entry<String, String> entry : filterParams.entrySet()) {
                 switch (entry.getKey()) {
                     case "location":
@@ -127,7 +134,8 @@ public class StudyGroup {
                         results.getInt(7),
                         results.getString(8),
                         results.getTimestamp(9),
-                        results.getTimestamp(10)
+                        results.getTimestamp(10),
+                        results.getBoolean(11)
                     )
                 );
             }
