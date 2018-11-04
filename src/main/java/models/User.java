@@ -340,9 +340,10 @@ public class User {
 			sql.executeQuery();
 			ResultSet results = sql.getResults();
 			if (results.next()) {
-				user = new User(results.getInt("id"), results.getString("email"), results.getString("password"),
+				user = new User(results.getInt("id"), results.getString("email"), null,
 						results.getString("firstName"), results.getString("lastName"), results.getInt("year"),
 						results.getString("major"));
+				user.setAuthToken(authToken);
 			}
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();

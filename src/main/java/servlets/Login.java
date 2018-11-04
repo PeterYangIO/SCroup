@@ -21,8 +21,9 @@ public class Login extends HttpServlet {
         Gson gson = new Gson();
         User user = new Gson().fromJson(request.getReader(), models.User.class);
         String token = user.authenticate();
+        User populatedUser = User.lookUpByAuthToken(token);
         response.setContentType("application/json");
 
-        response.getWriter().print(gson.toJson(user));
+        response.getWriter().print(gson.toJson(populatedUser));
     }
 }
