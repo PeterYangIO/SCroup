@@ -14,11 +14,12 @@ import util.EmailSender;
 public class User {
 	private int id;
 	private String email;
-	private String password;
+	private transient String password;
 	private String firstName;
 	private String lastName;
 	private int year;
 	private String major;
+	private String authToken;
 
 	// Creating the account
 	private User(int id, String email, String password, String firstName, String lastName, int year, String major) {
@@ -160,6 +161,7 @@ public class User {
 			sql.close();
 		}
 
+		this.authToken = returnedToken;
 		return returnedToken;
 	}
 
@@ -420,6 +422,10 @@ public class User {
 	public int getYear() {
 		return this.year;
 	}
+	
+	public String getAuthToken() {
+		return this.authToken;
+	}
 
 	// Setter functions
 	public void setFName(String fName) {
@@ -436,5 +442,9 @@ public class User {
 
 	public void setYear(int y) {
 		this.year = y;
+	}
+	
+	public void setAuthToken(String token) {
+		this.authToken = token;
 	}
 }
