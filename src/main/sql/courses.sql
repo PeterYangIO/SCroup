@@ -1,0 +1,8 @@
+
+DROP TABLE IF EXISTS courses;
+CREATE TABLE courses (
+	id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    department VARCHAR(4) NOT NULL , 
+	number INT(4) NOT NULL,
+	name VARCHAR(200) NOT NULL
+);
