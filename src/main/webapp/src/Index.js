@@ -9,6 +9,7 @@ import {createMuiTheme} from "@material-ui/core/es/styles";
 import Login from "./pages/Login";
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
 import Home from "./pages/Home";
+import GroupDashboard from "./pages/GroupDashboard";
 
 class Index extends React.Component {
     render() {
@@ -51,6 +52,7 @@ class Index extends React.Component {
                         <Switch>
                             <Route exact path="/" component={Login}/>
                             <Route path="/home" component={Home}/>
+                            <Route path="/dashboard" component={GroupDashboard} />
                         </Switch>
                     </BrowserRouter>
                 </MuiThemeProvider>
