@@ -35,22 +35,4 @@ public class JoinGroup extends HttpServlet {
             response.getWriter().print(gson.toJson(studyGroups));
         }
     }
-
-    @Deprecated
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO Authentication
-        JoinedGroup joinedGroup = new Gson().fromJson(request.getReader(), models.JoinedGroup.class);
-        if (!joinedGroup.dbInsert()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-    }
-
-    @Deprecated
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO Authentication
-        JoinedGroup joinedGroup = new Gson().fromJson(request.getReader(), models.JoinedGroup.class);
-        if (!joinedGroup.dbDelete()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-    }
 }

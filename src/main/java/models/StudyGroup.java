@@ -21,10 +21,12 @@ public class StudyGroup {
     private String professor;
     private Timestamp start;
     private Timestamp end;
+    // joined is not a normalized database entry - it's a generated value by checking the joinedgroups table
+    private boolean joined;
 
     StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
                String location, int topic, String professor,
-               Timestamp start, Timestamp end) {
+               Timestamp start, Timestamp end, boolean joined) {
         this.id = id;
         this.courseId = courseId;
         this.ownerId = ownerId;
@@ -35,6 +37,7 @@ public class StudyGroup {
         this.professor = professor;
         this.start = start;
         this.end = end;
+        this.joined = joined;
     }
 
     /**
@@ -131,7 +134,8 @@ public class StudyGroup {
                         results.getInt(7),
                         results.getString(8),
                         results.getTimestamp(9),
-                        results.getTimestamp(10)
+                        results.getTimestamp(10),
+                        results.getBoolean(11)
                     )
                 );
             }

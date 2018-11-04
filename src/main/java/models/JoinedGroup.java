@@ -18,6 +18,10 @@ public class JoinedGroup {
         this.groupId = groupId;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     /**
      * Selects all study groups a user has joined. This is useful for displaying
      * all the study groups a user belongs to on one page instead of
@@ -54,7 +58,8 @@ public class JoinedGroup {
                         results.getInt(7),
                         results.getString(8),
                         results.getTimestamp(9),
-                        results.getTimestamp(10)
+                        results.getTimestamp(10),
+                        true
                     )
                 );
             }
@@ -152,6 +157,27 @@ public class JoinedGroup {
             sql.close();
         }
 
+        if (success) {
+            // Increment amount of users in the group by 1
+            sql = new SQLConnection();
+            try {
+                PreparedStatement statement = sql.prepareStatement(
+                    "UPDATE studygroups SET size=size + 1 WHERE id=?"
+                );
+                statement.setInt(1, this.groupId);
+
+                sql.setStatement(statement);
+                sql.executeUpdate();
+            }
+            catch (SQLException sqle) {
+                sqle.printStackTrace();
+                success = false;
+            }
+            finally {
+                sql.close();
+            }
+        }
+
         return success;
     }
 
@@ -180,6 +206,27 @@ public class JoinedGroup {
         }
         finally {
             sql.close();
+        }
+
+        if (success) {
+            // Decrement amount of users in the group by 1
+            sql = new SQLConnection();
+            try {
+                PreparedStatement statement = sql.prepareStatement(
+                    "UPDATE studygroups SET size=size - 1 WHERE id=?"
+                );
+                statement.setInt(1, this.groupId);
+
+                sql.setStatement(statement);
+                sql.executeUpdate();
+            }
+            catch (SQLException sqle) {
+                sqle.printStackTrace();
+                success = false;
+            }
+            finally {
+                sql.close();
+            }
         }
 
         return success;

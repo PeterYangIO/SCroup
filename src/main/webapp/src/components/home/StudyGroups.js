@@ -47,6 +47,8 @@ export default class StudyGroups extends React.Component {
         super(props);
 
         this.state = {
+            webSocket: undefined,
+
             studyGroups: undefined,
             expandedPanel: -1,
 
@@ -59,20 +61,83 @@ export default class StudyGroups extends React.Component {
             professor: "",
             after: moment().format("YYYY-MM-DDTHH:mm"),
             before: ""
-        }
+        };
     }
 
     async componentDidMount() {
-        // await this.getData();
-
-        // Dummy data
-        const dummyData = [{id: 1, courseId: 1, ownerId: 1, capacity: 4, size: 3, location: "SAL 126", topic: 1, professor: "Jeffrey Miller, Ph.D", start: "2018-10-27T13:00:00", end: "2018-10-27T14:00:00"}, {id: 2, courseId: 1, ownerId: 1, capacity: 6, size: 6, location: "SAL 127", topic: 0, professor: "Jeffrey Miller, Ph.D", start: "2018-10-27T18:00:00", end: "2018-10-27T21:00:00"}];
-        this.setState({
-            studyGroups: dummyData
-        });
+        await this.getData();
     }
 
+    /**
+     * Gets data from api and opens WebSocket for any join / leave updates
+     */
+    async componentDidUpdate(prevProps) {
+        const courseId = this.props.course ? this.props.course.id : -1;
+        const prevCourseId = prevProps.course ? prevProps.course.id : -1;
+        if (courseId !== prevCourseId) {
+            await this.getData();
+            this.connectToWebSocket();
+        }
+    }
+
+    /**
+     * Close WebSocket to current group before moving to next group
+     */
+    componentWillUpdate(prevProps) {
+        const courseId = this.props.course ? this.props.course.id : -1;
+        const prevCourseId = prevProps.course ? prevProps.course.id : -1;
+        if (courseId !== prevCourseId) {
+            this.state.webSocket && this.state.webSocket.close();
+        }
+    }
+
+    /**
+     * Connects to the study-groups WebSocket for this course id. This is
+     * similar to having multiple "chat rooms" where each course
+     * has its own room with clients connected to it at any time.
+     */
+    connectToWebSocket = () => {
+        if (this.props.course === undefined) {
+            return
+        }
+        const webSocket = new WebSocket(`ws://${window.location.host}/study-groups/${this.props.course.id}`);
+        webSocket.onopen = () => {
+            // TODO send authentication
+            console.log(`opened ${webSocket.url}`);
+        };
+
+        webSocket.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if (data.success) {
+                await this.getData();
+            }
+            else {
+                console.error(data.message);
+            }
+        };
+
+        webSocket.onclose = () => {
+            console.log(`closed ${webSocket.url}`);
+        };
+
+        this.setState({webSocket});
+    };
+
+    /**
+     * Closes WebSocket before navigating away
+     */
+    componentWillUnmount() {
+        this.state.webSocket && this.state.webSocket.close();
+    }
+
+    /**
+     * Makes request to /api/study-groups (not the WebSocket)
+     * with filter parameters to get list of study groups
+     */
     getData = async () => {
+        if (this.props.course === undefined) {
+            return;
+        }
         try {
             const {capacityMin, capacityMax, hideFull, location, topic, professor, after, before} = this.state;
             const filterParameters = {
@@ -109,16 +174,34 @@ export default class StudyGroups extends React.Component {
         }
     };
 
+    /**
+     * Handle changing of filter option (checkbox, dropdown, text)
+     */
     handleChange = (event) => {
         this.setState({
-            [event.target.name]: event.target.type === "checkbox" ? !this.state[event.target.name ]: event.target.value
+            [event.target.name]: event.target.type === "checkbox" ? !this.state[event.target.name] : event.target.value
         }, this.getData);
     };
 
+    /**
+     * Handle open / closing of selected group panel
+     */
     handlePanel = (expandedPanel) => {
         this.setState({
             expandedPanel: this.state.expandedPanel === expandedPanel ? -1 : expandedPanel
         });
+    };
+
+    /**
+     * Communicates with WebSocket to join / leave group
+     */
+    toggleJoin = (groupId, joined) => {
+        this.state.webSocket.send(
+            JSON.stringify({
+                method: joined ? "leave" : "join",
+                data: {groupId}
+            })
+        );
     };
 
     render() {
@@ -129,7 +212,7 @@ export default class StudyGroups extends React.Component {
                 <Typography component="p" variant="body1">
                     Please select a course from the left to browse study groups.
                 </Typography>
-            )
+            );
         }
         return (
             <>
@@ -209,7 +292,11 @@ export default class StudyGroups extends React.Component {
                 </div>
 
                 {
-                    this.state.studyGroups.map(item => (
+                    this.state.studyGroups && this.state.studyGroups.length === 0 &&
+                    <Typography>No study groups for this course.</Typography>
+                }
+                {
+                    this.state.studyGroups && this.state.studyGroups.length > 0 && this.state.studyGroups.map(item => (
                         <ExpansionPanel
                             key={item.id}
                             expanded={this.state.expandedPanel === item.id}
@@ -242,8 +329,9 @@ export default class StudyGroups extends React.Component {
                             </ExpansionPanelDetails>
                             <Divider/>
                             <ExpansionPanelActions>
-                                <Button color="primary" size="small">
-                                    Join
+                                <Button color="primary" size="small"
+                                        onClick={() => this.toggleJoin(item.id, item.joined)}>
+                                    {item.joined ? "Leave" : "Join"}
                                 </Button>
                             </ExpansionPanelActions>
                         </ExpansionPanel>
