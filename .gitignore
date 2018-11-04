@@ -15,3 +15,4 @@ src/main/webapp/package-lock.json
 src/main/webapp/static/js
 web/META-INF/
 /target/
+bin/
