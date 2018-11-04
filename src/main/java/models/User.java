@@ -22,7 +22,7 @@ public class User {
 	private String authToken;
 
 	// Creating the account
-	private User(int id, String email, String password, String firstName, String lastName, int year, String major) {
+	public User(int id, String email, String password, String firstName, String lastName, int year, String major) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
