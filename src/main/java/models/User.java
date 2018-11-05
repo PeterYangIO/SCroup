@@ -104,12 +104,13 @@ public class User {
 				String tempPassword = results.getString("tempPassword");
 				String permPassword = results.getString("password");
 				Boolean authorized = false;
+				Boolean passwordUpdate = false;
 				if (tempPassword != null) {
 					// If log in with temporary password, then update temporary to permanent
 					// password
 					if (tempPassword.equals(hashedPassword)) {
 						authorized = true;
-						updatePassword();
+						passwordUpdate = true;
 					}
 				}
 
@@ -118,7 +119,7 @@ public class User {
 						authorized = true;
 						// Erase temporary password if log in with permanent password
 						if (tempPassword != null) {
-							updatePassword();
+							passwordUpdate = true;
 						}
 					} else {
 						return returnedToken;
@@ -151,6 +152,11 @@ public class User {
 
 							sql.setStatement(statement);
 							sql.executeUpdate();
+							
+							this.authToken = returnedToken;
+							if (passwordUpdate) {
+								updatePassword();
+							}
 						}
 					}
 				}
@@ -160,8 +166,7 @@ public class User {
 		} finally {
 			sql.close();
 		}
-
-		this.authToken = returnedToken;
+		
 		return returnedToken;
 	}
 
@@ -173,9 +178,9 @@ public class User {
 
 		// Get salt
 		try {
-			PreparedStatement statement = sql.prepareStatement("SELECT * FROM users WHERE email=?");
+			PreparedStatement statement = sql.prepareStatement("SELECT * FROM users WHERE authToken=?");
 
-			statement.setString(1, this.email);
+			statement.setString(1, this.authToken);
 
 			sql.setStatement(statement);
 			sql.executeQuery();
