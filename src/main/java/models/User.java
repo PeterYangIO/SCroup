@@ -219,13 +219,13 @@ public class User {
 
 		try {
 			PreparedStatement statement = sql
-					.prepareStatement("UPDATE users " + "SET firstName, lastName, year, major " + "WHERE email=?");
+					.prepareStatement("UPDATE users " + "SET firstName, lastName, year, major " + "WHERE authToken=?");
 
 			statement.setString(1, this.firstName);
 			statement.setString(2, this.lastName);
 			statement.setInt(3, this.year);
 			statement.setString(4, this.major);
-			statement.setString(5, this.email);
+			statement.setString(5, this.authToken);
 			sql.setStatement(statement);
 			sql.executeUpdate();
 		} catch (SQLException sqle) {
