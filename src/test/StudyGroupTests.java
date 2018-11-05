@@ -8,6 +8,7 @@ import util.SQLConnection;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,8 +109,10 @@ class StudyGroupTests {
         int userId = 1;
 
         ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
-        assertEquals(1, studyGroups.size());
-        assertEquals(2, studyGroups.get(0).getOwnerId());
+        assertTrue(studyGroups.size() > 0);
+        for (StudyGroup studyGroup: studyGroups) {
+            assertTrue(studyGroup.getCapacity() >= 5);
+        }
     }
 
     @Test
@@ -122,7 +125,7 @@ class StudyGroupTests {
         ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
         assertTrue(studyGroups.size() > 0);
         for (StudyGroup studyGroup : studyGroups) {
-            assertTrue(studyGroup.getCapacity() >= 5);
+            assertTrue(studyGroup.getCapacity() <= 5);
         }
     }
 
@@ -167,13 +170,15 @@ class StudyGroupTests {
     void filterParameterTopic() {
         Map<String, String> filterParams = new HashMap<>();
         filterParams.put("courseId", "1");
-        filterParams.put("topic", "1");
         int userId = 1;
 
-        ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
-        assertTrue(studyGroups.size() > 0);
-        for (StudyGroup studyGroup : studyGroups) {
-            assertEquals(1, studyGroup.getTopic());
+        for (int i = 0; i < 4; i++) {
+            filterParams.put("topic", Integer.toString(i));
+
+            ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
+            for (StudyGroup studyGroup : studyGroups) {
+                assertEquals(i, studyGroup.getTopic());
+            }
         }
     }
 
@@ -207,18 +212,32 @@ class StudyGroupTests {
         int userId = 1;
 
         ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
-        assertTrue(studyGroups.size() > 0);
+        for (StudyGroup studyGroup : studyGroups) {
+            assertTrue(
+                studyGroup.getStart()
+                    .compareTo(
+                        Timestamp.valueOf("2018-01-01 00:00:00")
+                    ) >= 0
+            );
+        }
     }
 
     @Test
     void filterParameterBefore() {
         Map<String, String> filterParams = new HashMap<>();
         filterParams.put("courseId", "1");
-        filterParams.put("before", "2018-01-01 2:00:00");
+        filterParams.put("before", "2018-01-01 02:00:00");
         int userId = 1;
 
         ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
-        assertTrue(studyGroups.size() > 0);
+        for (StudyGroup studyGroup : studyGroups) {
+            assertTrue(
+                studyGroup.getStart()
+                    .compareTo(
+                        Timestamp.valueOf("2018-01-01 02:00:00")
+                    ) <= 0
+            );
+        }
     }
 
     /**
@@ -369,7 +388,7 @@ class StudyGroupTests {
 
         assertTrue(joinedGroup.dbInsert());
         joinedGroups = JoinedGroup.dbSelectByUser(1);
-        assertTrue(joinedGroups.size() > currentSize);
+        assertEquals(currentSize + 1, joinedGroups.size());
     }
 
     @Test
