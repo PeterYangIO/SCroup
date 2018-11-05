@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import models.JoinedGroup;
 import models.StudyGroup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StudyGroupTests {
     @BeforeAll
-    static void initEach() {
+    static void initAll() {
         SQLConnection sql = new SQLConnection(true);
 
         try {
@@ -66,7 +67,7 @@ class StudyGroupTests {
     }
 
     /**
-     * dbSelect() tests
+     * StudyGroup.dbSelect() tests
      */
 
     @Test
@@ -221,7 +222,7 @@ class StudyGroupTests {
     }
 
     /**
-     * dbInsert() tests
+     * StudyGroup.dbInsert() tests
      */
 
     @Test
@@ -324,17 +325,109 @@ class StudyGroupTests {
     }
 
     /**
-     * dbDelete() tests
+     * StudyGroup.dbDelete() tests
      */
 
     @Test
-    void delete() {
+    void deleteStudyGroup() {
         StudyGroup group = new Gson().fromJson(
             "{id: 4}",
             StudyGroup.class
         );
 
         assertTrue(group.dbDelete());
+    }
+
+    /**
+     * JoinedGroup.dbSelect() tests
+     */
+
+    @Test
+    void selectStudyGroupsById() {
+        assertNotNull(JoinedGroup.dbSelectByUser(1));
+    }
+
+    @Test
+    void selectUsersByStudyGroupId() {
+        assertNotNull(JoinedGroup.dbSelectByGroup(1));
+    }
+
+    /**
+     * JoinedGroup.dbInsert() tests
+     */
+
+    @Test
+    void insertJoinGroup() {
+        JoinedGroup joinedGroup = new Gson().fromJson(
+            "{groupId: 1}",
+            JoinedGroup.class
+        );
+        joinedGroup.setUserId(1);
+
+        ArrayList<StudyGroup> joinedGroups = JoinedGroup.dbSelectByUser(1);
+        int currentSize = joinedGroups.size();
+
+        assertTrue(joinedGroup.dbInsert());
+        joinedGroups = JoinedGroup.dbSelectByUser(1);
+        assertTrue(joinedGroups.size() > currentSize);
+    }
+
+    @Test
+    void insertJoinAlreadyJoined() {
+        JoinedGroup joinedGroup = new Gson().fromJson(
+            "{groupId: 1}",
+            JoinedGroup.class
+        );
+        joinedGroup.setUserId(1);
+
+        // Join now so user can try joining the joined group later
+        assertTrue(joinedGroup.dbInsert());
+        ArrayList<StudyGroup> joinedGroups = JoinedGroup.dbSelectByUser(1);
+        int currentSize = joinedGroups.size();
+
+        assertTrue(joinedGroup.dbInsert());
+        joinedGroups = JoinedGroup.dbSelectByUser(1);
+        assertEquals(currentSize, joinedGroups.size());
+    }
+
+    /**
+     * JoinedGroup.dbDelete() tests
+     */
+
+    @Test
+    void deleteLeaveGroup() {
+        JoinedGroup joinedGroup = new Gson().fromJson(
+            "{groupId: 1}",
+            JoinedGroup.class
+        );
+        joinedGroup.setUserId(1);
+
+        // First join group so user can leave it later
+        assertTrue(joinedGroup.dbInsert());
+        ArrayList<StudyGroup> joinedGroups = JoinedGroup.dbSelectByUser(1);
+        int currentSize = joinedGroups.size();
+
+        assertTrue(joinedGroup.dbDelete());
+        joinedGroups = JoinedGroup.dbSelectByUser(1);
+        assertEquals(currentSize - 1, joinedGroups.size());
+    }
+
+    @Test
+    void deleteLeaveAlreadyLeft() {
+        JoinedGroup joinedGroup = new Gson().fromJson(
+            "{groupId: 1}",
+            JoinedGroup.class
+        );
+        joinedGroup.setUserId(1);
+
+        // Ensure user is not in group
+        assertTrue(joinedGroup.dbDelete());
+        ArrayList<StudyGroup> joinedGroups = JoinedGroup.dbSelectByUser(1);
+        int currentSize = joinedGroups.size();
+
+        assertTrue(joinedGroup.dbDelete());
+        joinedGroups = JoinedGroup.dbSelectByUser(1);
+        assertEquals(currentSize,  joinedGroups.size());
     }
 
     @AfterAll
