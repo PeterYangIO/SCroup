@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  group_id INT NOT NULL,
+  message VARCHAR(1024) NOT NULL,
+  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  pinned BOOLEAN NOT NULL,
+
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (group_id) REFERENCES studygroups (id)
+);
