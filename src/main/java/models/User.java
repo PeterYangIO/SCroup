@@ -453,4 +453,8 @@ public class User {
 	public void setAuthToken(String token) {
 		this.authToken = token;
 	}
+	
+	public void setPassword(String pass) {
+		this.password = pass;
+	}
 }
