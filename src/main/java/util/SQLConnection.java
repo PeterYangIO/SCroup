@@ -4,6 +4,7 @@ import java.sql.*;
 
 public class SQLConnection {
     private static final String SCHEMA = "scroup";
+    private static final String TEST_SCHEMA = "scroup-test";
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
@@ -21,6 +22,21 @@ public class SQLConnection {
                 String.format(
                     "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false",
                     SCHEMA, USER, PASSWORD
+                )
+            );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SQLConnection(boolean test) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            this.connection = DriverManager.getConnection(
+                String.format(
+                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false",
+                    test ? TEST_SCHEMA : SCHEMA, USER, PASSWORD
                 )
             );
         }

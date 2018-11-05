@@ -14,3 +14,5 @@ CREATE TABLE studygroups (
   FOREIGN KEY (courseId) REFERENCES courses (id),
   FOREIGN KEY (ownerId) REFERENCES users (id)
 );
+
+SET time_zone="+00:00";
