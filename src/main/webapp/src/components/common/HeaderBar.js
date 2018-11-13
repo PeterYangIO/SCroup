@@ -32,7 +32,7 @@ export default class HeaderBar extends React.Component {
         super(props);
 
         this.state = {
-            authorized: sessionStorage.getItem("accessToken") !== null,
+            authorized: sessionStorage.getItem("authToken") !== null,
             anchorElement: null,
             drawerOpen: false
         }

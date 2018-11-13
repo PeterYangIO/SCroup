@@ -2,10 +2,7 @@ package models;
 
 import util.SQLConnection;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
@@ -78,6 +75,10 @@ public class StudyGroup {
 
     public Timestamp getStart() {
         return start;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     /**
@@ -193,6 +194,33 @@ public class StudyGroup {
         return studyGroups;
     }
 
+    public static int dbSelectOwnerId(int groupId) {
+        int ownerId = -1;
+        SQLConnection sql = new SQLConnection();
+
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "SELECT ownerId FROM studygroups WHERE id=?"
+            );
+
+            statement.setInt(1, groupId);
+            sql.setStatement(statement);
+            sql.executeQuery();
+            ResultSet results = sql.getResults();
+            if (results.next()) {
+                ownerId = results.getInt(1);
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            sql.close();
+        }
+
+        return ownerId;
+    }
+
     /**
      * Creates a study group with the following parameters:
      * courseId: required fk to associated university course
@@ -218,7 +246,8 @@ public class StudyGroup {
             PreparedStatement statement = sql.prepareStatement(
                 "INSERT INTO studygroups " +
                     "(courseId, ownerId, capacity, location, topic, professor, start, end) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS
             );
             statement.setInt(1, this.courseId);
             statement.setInt(2, this.ownerId);
@@ -231,6 +260,14 @@ public class StudyGroup {
 
             sql.setStatement(statement);
             sql.executeUpdate();
+
+            // After creating the study group join the owner to the group
+            ResultSet results = statement.getGeneratedKeys();
+            if (results.next()) {
+                int groupId = results.getInt(1);
+                JoinedGroup joinedGroup = new JoinedGroup(this.ownerId, groupId);
+                joinedGroup.dbInsert();
+            }
         }
         catch (SQLException sqle) {
             sqle.printStackTrace();

@@ -12,6 +12,11 @@ public class JoinedGroup {
     private int userId;
     private int groupId;
 
+    JoinedGroup(int userId, int groupId) {
+        this.userId = userId;
+        this.groupId = groupId;
+    }
+
     private JoinedGroup(int id, int userId, int groupId) {
         this.id = id;
         this.userId = userId;

@@ -1,5 +1,9 @@
 package models;
 
+import com.google.gson.annotations.Expose;
+import util.EmailSender;
+import util.SQLConnection;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -8,17 +12,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
-import util.SQLConnection;
-import util.EmailSender;
-
 public class User {
+	@Expose
 	private int id;
+	@Expose
 	private String email;
-	private transient String password;
+	// Do not expose
+	private String password;
+	@Expose
 	private String firstName;
+	@Expose
 	private String lastName;
+	@Expose
 	private int year;
+	@Expose
 	private String major;
+	@Expose
 	private String authToken;
 
 	// Creating the account
@@ -330,7 +339,7 @@ public class User {
 
 	// Use authorization token to get access to user object
 	public static User lookUpByAuthToken(String authToken) {
-		if (authToken.isEmpty()) {
+		if (authToken == null || authToken.isEmpty()) {
 			return null;
 		}
 

@@ -2,6 +2,7 @@ package servlets;
 
 import com.google.gson.Gson;
 import models.StudyGroup;
+import models.User;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,10 +20,28 @@ public class StudyGroups extends HttpServlet {
         if (method.equals("GET")) {
             this.doGet(request, response);
         }
-        // TODO Check Authentication Header for permissions
-        // (any for POST, requesting user equals studyGroup's owner for PUT and DELETE
         else if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE")) {
+            // Check for authentication
+            User user = User.lookUpByAuthToken(request.getHeader("authorization"));
+            if (user == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
             StudyGroup studyGroup = new Gson().fromJson(request.getReader(), models.StudyGroup.class);
+            // Set owner id from authenticated user object
+            studyGroup.setOwnerId(user.getID());
+
+            // Validate that editing or deleting a study group is done by the owner
+            // Note we make a DB call instead of checking studyGroup.getOwnerId() in case
+            // a malicious user modifies the payload so that the ownerId always equals the uid
+            if (method.equals("PUT") || method.equals("DELETE")
+                && StudyGroup.dbSelectOwnerId(studyGroup.getId()) != user.getID()) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            // Execute the database function
             boolean success = true;
             switch (method) {
                 case "POST":
@@ -55,8 +74,8 @@ public class StudyGroups extends HttpServlet {
             return;
         }
 
-        // TODO authentication and userId
-        int userId = 1;
+        User user = User.lookUpByAuthToken(request.getHeader("authorization"));
+        int userId = user == null ? -1 : user.getID();
         ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
         Gson gson = new Gson();
         response.setContentType("application/json");

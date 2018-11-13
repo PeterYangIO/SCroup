@@ -90,12 +90,22 @@ export default class CreateFab extends React.Component {
             url = "/api/study-groups";
             submitData = {
                 courseId: this.state.courseId,
-                capacity: this.state.capacity,
-                location: this.state.location,
-                topic: this.state.topic,
-                professor: this.state.professor,
-                start: new Date(this.state.start).toISOString(),
-                end: new Date(this.state.end).toISOString()
+                topic: this.state.topic
+            };
+            if (this.state.capacity) {
+                submitData.capacity = parseInt(this.state.capacity);
+            }
+            if (this.state.location) {
+                submitData.location = this.state.location;
+            }
+            if (this.state.professor) {
+                submitData.professor = this.state.professor;
+            }
+            if (this.state.start) {
+                submitData.start = new Date(this.state.start).toISOString();
+            }
+            if (this.state.end) {
+                submitData.end = new Date(this.state.end).toISOString();
             }
         }
 

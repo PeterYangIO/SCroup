@@ -204,7 +204,7 @@ export default class Home extends React.Component {
                 </main>
 
                 {
-                    sessionStorage.getItem("accessToken")
+                    sessionStorage.getItem("authToken")
                     && (
                         <CreateFab
                         course={this.state.selectedCourse}

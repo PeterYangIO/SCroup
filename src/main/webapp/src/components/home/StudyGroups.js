@@ -214,6 +214,7 @@ export default class StudyGroups extends React.Component {
                 </Typography>
             );
         }
+
         return (
             <>
                 <Typography component="h2" variant="h2">{course.department}-{course.number}</Typography>
@@ -306,7 +307,7 @@ export default class StudyGroups extends React.Component {
                                     <Typography
                                         className={`${classes.secondaryText} ${classes.inlineText}`}
                                         style={{marginRight: "1rem"}}>
-                                        {item.size}/{item.capacity}
+                                        {item.size}/{item.capacity ? item.capacity : "∞"}
                                     </Typography>
                                     <Typography className={classes.inlineText}>
                                         {item.ownerId}'s Group
