@@ -36,7 +36,7 @@ public class StudyGroups extends HttpServlet {
             // Validate that editing or deleting a study group is done by the owner
             // Note we make a DB call instead of checking studyGroup.getOwnerId() in case
             // a malicious user modifies the payload so that the ownerId always equals the uid
-            if (method.equals("PUT") || method.equals("DELETE")
+            if ((method.equals("PUT") || method.equals("DELETE"))
                 && StudyGroup.dbSelectOwnerId(studyGroup.getId()) != user.getID()) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;

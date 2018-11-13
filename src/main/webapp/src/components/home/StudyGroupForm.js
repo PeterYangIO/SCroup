@@ -16,8 +16,8 @@ export default class StudyGroupForm extends React.Component {
         super(props);
 
         this.state = {
-            courseId: props.id ? props.id : 1,
-            capacity: props.courseId ? props.courseId : "",
+            courseId: props.courseId ? props.courseId: 1,
+            capacity: props.capacity ? props.capacity : "",
             location: props.location ? props.location : "",
             topic: props.topic !== undefined ? props.topic : 0,
             professor: props.professor ? props.professor : "",

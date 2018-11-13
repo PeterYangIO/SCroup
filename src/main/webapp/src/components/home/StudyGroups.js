@@ -19,10 +19,21 @@ import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import FormControl from "@material-ui/core/FormControl/FormControl";
 import {Link} from "react-router-dom";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import StudyGroupForm from "./StudyGroupForm";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 
 @withStyles(theme => ({
     column: {
         width: "33.3%"
+    },
+    dialog: {
+        marginTop: "1rem",
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-between"
     },
     filters: {
         display: "flex",
@@ -54,6 +65,10 @@ export default class StudyGroups extends React.Component {
             studyGroups: undefined,
             expandedPanel: -1,
 
+            // Edit modal
+            showEditDialog: false,
+            groupSelectedForEditing: undefined,
+
             // Filters
             capacityMin: "",
             capacityMax: "",
@@ -64,6 +79,8 @@ export default class StudyGroups extends React.Component {
             after: moment().format("YYYY-MM-DDTHH:mm"),
             before: ""
         };
+
+        this.studyGroupFormRef = React.createRef();
     }
 
     async componentDidMount() {
@@ -140,6 +157,19 @@ export default class StudyGroups extends React.Component {
         this.state.webSocket && this.state.webSocket.close();
     }
 
+    closeEditDialog = () => {
+        this.setState({
+            showEditDialog: false
+        });
+    };
+
+    displayEditModal = (groupSelectedForEditing) => {
+        this.setState({
+            showEditDialog: true,
+            groupSelectedForEditing
+        });
+    };
+
     /**
      * Makes request to /api/study-groups (not the WebSocket)
      * with filter parameters to get list of study groups
@@ -200,6 +230,26 @@ export default class StudyGroups extends React.Component {
         this.setState({
             expandedPanel: this.state.expandedPanel === expandedPanel ? -1 : expandedPanel
         });
+    };
+
+    submitChildData = async (url, submitData) => {
+        try {
+            submitData.id = this.state.groupSelectedForEditing.id;
+            const response = await NetworkRequest.put(url, submitData);
+            if (response.ok) {
+                alert("Success");
+            }
+            else {
+                alert("Invalid input");
+            }
+        }
+        catch (exception) {
+            console.error(error);
+        }
+    };
+
+    submitGroupEdits = async () => {
+        await this.studyGroupFormRef.current.submit();
     };
 
     /**
@@ -352,7 +402,7 @@ export default class StudyGroups extends React.Component {
                                     }
                                     {
                                         item.ownerId === JSON.parse(sessionStorage.getItem("user")).id &&
-                                        <Button color="primary" size="small">
+                                        <Button color="primary" size="small" onClick={() => this.displayEditModal(item)}>
                                             Edit
                                         </Button>
                                     }
@@ -365,6 +415,23 @@ export default class StudyGroups extends React.Component {
                         </ExpansionPanel>
                     ))
                 }
+
+                <Dialog
+                    open={this.state.showEditDialog}
+                    onClose={this.closeEditDialog}>
+                    <DialogTitle>Edit Study Group</DialogTitle>
+                    <DialogContent className={classes.dialog}>
+                        <StudyGroupForm
+                            {...this.state.groupSelectedForEditing}
+                            innerRef={this.studyGroupFormRef}
+                            departments={this.props.departments}
+                            submit={this.submitChildData}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.closeEditDialog()}>Cancel</Button>
+                        <Button color="primary" onClick={() => this.submitGroupEdits()}>Submit</Button>
+                    </DialogActions>
+                </Dialog>
             </>
         );
     }

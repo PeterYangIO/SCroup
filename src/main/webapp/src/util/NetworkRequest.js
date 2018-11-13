@@ -15,11 +15,11 @@ export default class NetworkRequest {
     }
 
     static async put(url, body, isJson = true) {
-        return await NetworkRequest.makeRequest(url, "POST", body, isJson);
+        return await NetworkRequest.makeRequest(url, "PUT", body, isJson);
     }
 
     static async delete(url, body, isJson = true) {
-        return await NetworkRequest.makeRequest(url, "POST", body, isJson);
+        return await NetworkRequest.makeRequest(url, "DELETE", body, isJson);
     }
 
     static async makeRequest(url, method, body = null, isJson = true) {

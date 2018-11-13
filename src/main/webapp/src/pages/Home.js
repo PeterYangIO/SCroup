@@ -199,7 +199,7 @@ export default class Home extends React.Component {
                         </div>
                     </div>
                     <section className={classes.groupsContainer}>
-                        <StudyGroups course={this.state.selectedCourse}/>
+                        <StudyGroups course={this.state.selectedCourse} departments={this.state.departments}/>
                     </section>
                 </main>
 
