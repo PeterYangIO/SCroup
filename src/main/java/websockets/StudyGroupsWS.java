@@ -3,6 +3,7 @@ package websockets;
 import com.google.gson.Gson;
 import models.JoinedGroup;
 import models.JoinedGroupRequest;
+import models.User;
 import models.WebSocketResponse;
 
 import javax.websocket.*;
@@ -12,8 +13,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 
+
 @ServerEndpoint(value="/study-groups/{courseId}")
 public class StudyGroupsWS {
+    private static final String AUTHENTICATION = "AUTHENTICATION";
+    private static final String INVALID = "INVALID";
+    private static final String REFRESH = "REFRESH";
+
     private static HashMap<Integer, Vector<Session>> sessionVectors = new HashMap<>();
 
     /**
@@ -23,8 +29,6 @@ public class StudyGroupsWS {
      */
     @OnOpen
     public void open(Session session, @PathParam("courseId") Integer courseId) {
-        System.out.println("Connection made! " + courseId.toString());
-
         if (sessionVectors.get(courseId) == null) {
             Vector<Session> sessionVector = new Vector<>();
             sessionVector.add(session);
@@ -37,7 +41,7 @@ public class StudyGroupsWS {
 
     /**
      * Frontend first needs to send an authentication token before the backend will
-     * accept any requests. (TODO)
+     * accept any requests.
      *
      * Frontend will then send messages to join or leave a specific group within a course id.
      * This request is processed into the database and the backend (this function) sends
@@ -46,12 +50,30 @@ public class StudyGroupsWS {
      */
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("courseId") Integer courseId) {
-        System.out.println("Received message: " + message);
-        if (session.getUserProperties().get("user") == null) {
-            authenticateConnection(message, session, courseId);
+        Gson gson = new Gson();
+        try {
+            if (session.getUserProperties().get("user") == null) {
+                if (authenticateConnection(message, session)) {
+                    WebSocketResponse response = new WebSocketResponse(
+                        true, AUTHENTICATION
+                    );
+                    session.getBasicRemote().sendText(gson.toJson(response));
+                }
+                else {
+                    WebSocketResponse response = new WebSocketResponse(
+                        false, AUTHENTICATION
+                    );
+                    session.getBasicRemote().sendText(gson.toJson(response));
+                    close(session, courseId);
+                }
+            }
+            else {
+                processJoinedGroupRequest(message, session, courseId);
+            }
         }
-        else {
-            processJoinedGroupRequest(message, session, courseId);
+        catch (IOException ioe) {
+            ioe.printStackTrace();
+            close(session, courseId);
         }
     }
 
@@ -61,7 +83,6 @@ public class StudyGroupsWS {
      */
     @OnClose
     public void close(Session session, @PathParam("courseId") Integer courseId) {
-        System.out.println("Disconnecting! " + courseId.toString());
         Vector<Session> sessionVector = sessionVectors.get(courseId);
         sessionVector.remove(session);
         if (sessionVector.size() == 0) {
@@ -75,10 +96,16 @@ public class StudyGroupsWS {
     }
 
     /**
-     * TODO
+     * When the connection is opened, the frontend should send the auth token
+     *
+     * @param authToken token to authenticate user with
+     * @param session session user will belong to
+     * @return true if valid user
      */
-    private void authenticateConnection(String message, Session session, int courseId) {
-        session.getUserProperties().put("user", "user");
+    private boolean authenticateConnection(String authToken, Session session) {
+        User user = User.lookUpByAuthToken(authToken);
+        session.getUserProperties().put("user", user);
+        return user != null;
     }
 
     /**
@@ -88,37 +115,47 @@ public class StudyGroupsWS {
     private void processJoinedGroupRequest(String message, Session session, int courseId) {
         Gson gson = new Gson();
         try {
-            // 1. Read message and parse from json to JoinedGroupRequest object
+            // 1. Get user from session - we know it is not null when entering this function
+            User user = (User) session.getUserProperties().get("user");
+
+            // 2. Read message and parse from json to JoinedGroupRequest object
             JoinedGroupRequest joinedGroupRequest = gson.fromJson(
                 message, models.JoinedGroupRequest.class
             );
 
-            // 2. Depending on specified method, join or leave the group
-            // TODO handle fail of db, let user know something went wrong
-            // TODO validate that user in the data is the authorized user
+            // 3. Depending on specified method, join or leave the group
+            boolean success = false;
             JoinedGroup joinedGroup = joinedGroupRequest.getData();
-            joinedGroup.setUserId(1);  // TODO get user id from session
+            joinedGroup.setUserId(user.getID());
             switch (joinedGroupRequest.getMethod()) {
                 case "join":
-                    joinedGroup.dbInsert();
+                    success = joinedGroup.dbInsert();
                     break;
                 case "leave":
-                    joinedGroup.dbDelete();
+                    success = joinedGroup.dbDelete();
                     break;
-                default:
+                default:  // Invalid user input
                     WebSocketResponse response = new WebSocketResponse(
-                        false, "Invalid method"
+                        false, INVALID
                     );
                     session.getBasicRemote().sendText(gson.toJson(response));
                     break;
             }
+            // Database error
+            if (!success) {
+                WebSocketResponse response = new WebSocketResponse(
+                    false, INVALID
+                );
+                session.getBasicRemote().sendText(gson.toJson(response));
+                return;
+            }
 
-            // 3. Tell all listeners that something has changed
+            // 4. Tell all listeners that something has changed
             // (ask them to make a GET request to /api/study-groups)
             Vector<Session> sessionVector = sessionVectors.get(courseId);
             for (Session s: sessionVector) {
                 WebSocketResponse response = new WebSocketResponse(
-                    true, "Client should refresh content"
+                    true, REFRESH
                 );
                 s.getBasicRemote().sendText(gson.toJson(response));
             }

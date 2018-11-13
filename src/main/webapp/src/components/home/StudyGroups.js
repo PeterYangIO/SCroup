@@ -49,6 +49,7 @@ export default class StudyGroups extends React.Component {
         this.state = {
             webSocket: undefined,
 
+            authenticated: false,
             studyGroups: undefined,
             expandedPanel: -1,
 
@@ -102,17 +103,25 @@ export default class StudyGroups extends React.Component {
         }
         const webSocket = new WebSocket(`ws://${window.location.host}/study-groups/${this.props.course.id}`);
         webSocket.onopen = () => {
-            // TODO send authentication
-            console.log(`opened ${webSocket.url}`);
+            webSocket.send(sessionStorage.getItem("authToken"));
         };
 
         webSocket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
-            if (data.success) {
-                await this.getData();
-            }
-            else {
-                console.error(data.message);
+            switch (data.message) {
+                case "AUTHENTICATION":
+                    this.setState({
+                        authenticated: data.success
+                    });
+                    break;
+                case "REFRESH":
+                    await this.getData();
+                    break;
+                case "INVALID":
+                    alert("Could not process your request");
+                    break;
+                default:
+                    console.error(data.message, "not implemented");
             }
         };
 
@@ -329,12 +338,15 @@ export default class StudyGroups extends React.Component {
                                 <Typography>Professor: {item.professor ? item.professor : "N/A"}</Typography>
                             </ExpansionPanelDetails>
                             <Divider/>
-                            <ExpansionPanelActions>
-                                <Button color="primary" size="small"
-                                        onClick={() => this.toggleJoin(item.id, item.joined)}>
-                                    {item.joined ? "Leave" : "Join"}
-                                </Button>
-                            </ExpansionPanelActions>
+                            {
+                                this.state.authenticated &&
+                                <ExpansionPanelActions>
+                                    <Button color="primary" size="small"
+                                            onClick={() => this.toggleJoin(item.id, item.joined)}>
+                                        {item.joined ? "Leave" : "Join"}
+                                    </Button>
+                                </ExpansionPanelActions>
+                            }
                         </ExpansionPanel>
                     ))
                 }
