@@ -3,6 +3,7 @@ package servlets;
 import com.google.gson.Gson;
 import models.StudyGroup;
 import models.User;
+import websockets.StudyGroupsWS;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -46,6 +47,9 @@ public class StudyGroups extends HttpServlet {
             switch (method) {
                 case "POST":
                     success = studyGroup.dbInsert();
+                    if (success) {
+                        StudyGroupsWS.broadcastRefresh(studyGroup.getCourseId());
+                    }
                     break;
                 case "PUT":
                     success = studyGroup.dbUpdate();

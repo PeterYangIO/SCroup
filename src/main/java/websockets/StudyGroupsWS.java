@@ -19,6 +19,7 @@ public class StudyGroupsWS {
     private static final String AUTHENTICATION = "AUTHENTICATION";
     private static final String INVALID = "INVALID";
     private static final String REFRESH = "REFRESH";
+    private static final Gson gson = new Gson();
 
     private static HashMap<Integer, Vector<Session>> sessionVectors = new HashMap<>();
 
@@ -50,7 +51,6 @@ public class StudyGroupsWS {
      */
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("courseId") Integer courseId) {
-        Gson gson = new Gson();
         try {
             if (session.getUserProperties().get("user") == null) {
                 if (authenticateConnection(message, session)) {
@@ -95,6 +95,20 @@ public class StudyGroupsWS {
         System.out.println(error.toString());
     }
 
+    public static void broadcastRefresh(int courseId) throws IOException {
+        Vector<Session> sessionVector = sessionVectors.get(courseId);
+        if (sessionVector == null) {
+            // No one connected so don't broadcast (otherwise null ptr exception)
+            return;
+        }
+        for (Session s: sessionVector) {
+            WebSocketResponse response = new WebSocketResponse(
+                true, REFRESH
+            );
+            s.getBasicRemote().sendText(gson.toJson(response));
+        }
+    }
+
     /**
      * When the connection is opened, the frontend should send the auth token
      *
@@ -113,7 +127,6 @@ public class StudyGroupsWS {
      * Input is a message string formatted as a JoinedGroupRequest
      */
     private void processJoinedGroupRequest(String message, Session session, int courseId) {
-        Gson gson = new Gson();
         try {
             // 1. Get user from session - we know it is not null when entering this function
             User user = (User) session.getUserProperties().get("user");
@@ -134,6 +147,9 @@ public class StudyGroupsWS {
                 case "leave":
                     success = joinedGroup.dbDelete();
                     break;
+                case "update":
+                    success = true;
+                    break;
                 default:  // Invalid user input
                     WebSocketResponse response = new WebSocketResponse(
                         false, INVALID
@@ -152,13 +168,7 @@ public class StudyGroupsWS {
 
             // 4. Tell all listeners that something has changed
             // (ask them to make a GET request to /api/study-groups)
-            Vector<Session> sessionVector = sessionVectors.get(courseId);
-            for (Session s: sessionVector) {
-                WebSocketResponse response = new WebSocketResponse(
-                    true, REFRESH
-                );
-                s.getBasicRemote().sendText(gson.toJson(response));
-            }
+            broadcastRefresh(courseId);
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
