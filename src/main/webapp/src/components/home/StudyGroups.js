@@ -18,6 +18,7 @@ import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import FormControl from "@material-ui/core/FormControl/FormControl";
+import {Link} from "react-router-dom";
 
 @withStyles(theme => ({
     column: {
@@ -341,6 +342,20 @@ export default class StudyGroups extends React.Component {
                             {
                                 this.state.authenticated &&
                                 <ExpansionPanelActions>
+                                    {
+                                        item.joined &&
+                                        <Button
+                                            color="primary" size="small" variant="contained"
+                                            component={Link} to="/">
+                                            Chat Room
+                                        </Button>
+                                    }
+                                    {
+                                        item.ownerId === JSON.parse(sessionStorage.getItem("user")).id &&
+                                        <Button color="primary" size="small">
+                                            Edit
+                                        </Button>
+                                    }
                                     <Button color="primary" size="small"
                                             onClick={() => this.toggleJoin(item.id, item.joined)}>
                                         {item.joined ? "Leave" : "Join"}
