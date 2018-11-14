@@ -1,6 +1,7 @@
 package servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import models.StudyGroup;
 import models.User;
 import websockets.StudyGroupsWS;
@@ -81,7 +82,7 @@ public class StudyGroups extends HttpServlet {
         User user = User.lookUpByAuthToken(request.getHeader("authorization"));
         int userId = user == null ? -1 : user.getID();
         ArrayList<StudyGroup> studyGroups = StudyGroup.dbSelect(filterParams, userId);
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").create();
         response.setContentType("application/json");
         response.getWriter().print(gson.toJson(studyGroups));
     }

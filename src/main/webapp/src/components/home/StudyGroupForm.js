@@ -5,6 +5,7 @@ import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import TextField from "@material-ui/core/TextField/TextField";
 import withStyles from "@material-ui/core/styles/withStyles";
+import moment from "moment";
 
 @withStyles({
     half: {
@@ -21,9 +22,11 @@ export default class StudyGroupForm extends React.Component {
             location: props.location ? props.location : "",
             topic: props.topic !== undefined ? props.topic : 0,
             professor: props.professor ? props.professor : "",
-            start: props.start ? props.start : "",
-            end: props.end ? props.end : ""
+            start: props.start ? moment(props.start).format("YYYY-MM-DDTHH:mm") : "",
+            end: props.end ? moment(props.end).format("YYYY-MM-DDTHH:mm") : ""
         };
+
+        console.log(this.state);
     }
 
     handleChange = (event) => {
