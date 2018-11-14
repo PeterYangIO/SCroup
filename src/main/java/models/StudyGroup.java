@@ -329,11 +329,22 @@ public class StudyGroup {
         SQLConnection sql = new SQLConnection();
 
         try {
-            PreparedStatement statement = sql.prepareStatement(
+            // 1. Unjoin all users in the study group
+            PreparedStatement unjoinUsers = sql.prepareStatement(
+                "DELETE FROM joinedgroups WHERE groupId=?"
+            );
+            unjoinUsers.setInt(1, this.id);
+            sql.setStatement(unjoinUsers);
+            sql.executeUpdate();
+
+            // 2. Delete the study group
+            PreparedStatement deleteStudyGroup = sql.prepareStatement(
                 "DELETE FROM studygroups WHERE id=?"
             );
 
-            statement.setInt(1, this.id);
+            deleteStudyGroup.setInt(1, this.id);
+            sql.setStatement(deleteStudyGroup);
+            sql.executeUpdate();
         }
         catch (SQLException sqle) {
             sqle.printStackTrace();

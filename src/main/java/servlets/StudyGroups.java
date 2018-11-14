@@ -47,9 +47,6 @@ public class StudyGroups extends HttpServlet {
             switch (method) {
                 case "POST":
                     success = studyGroup.dbInsert();
-                    if (success) {
-                        StudyGroupsWS.broadcastRefresh(studyGroup.getCourseId());
-                    }
                     break;
                 case "PUT":
                     success = studyGroup.dbUpdate();
@@ -58,7 +55,10 @@ public class StudyGroups extends HttpServlet {
                     success = studyGroup.dbDelete();
                     break;
             }
-            if (!success) {
+            if (success) {
+                StudyGroupsWS.broadcastRefresh(studyGroup.getCourseId());
+            }
+            else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
         }

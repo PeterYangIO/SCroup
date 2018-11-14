@@ -42,7 +42,6 @@ export default class CreateFab extends React.Component {
             const response = await NetworkRequest.post(url, submitData);
             if (response.ok) {
                 this.handleClose();
-                alert("Success!");
             }
             else {
                 alert("Invalid input");
@@ -101,13 +100,13 @@ export default class CreateFab extends React.Component {
                         {
                             tab === 0 &&
                             <CourseForm
-                                ref={this.courseFormRef}
+                                innerRef={this.courseFormRef}
                                 submit={this.submitChildData}/>
                         }
                         {
                             tab === 1 &&
                             <StudyGroupForm
-                                ref={this.studyGroupFormRef}
+                                innerRef={this.studyGroupFormRef}
                                 departments={this.props.departments}
                                 submit={this.submitChildData}/>
                         }

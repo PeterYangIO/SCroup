@@ -157,12 +157,43 @@ export default class StudyGroups extends React.Component {
         this.state.webSocket && this.state.webSocket.close();
     }
 
+    /**
+     * Closes edit dialog
+     */
     closeEditDialog = () => {
         this.setState({
             showEditDialog: false
         });
     };
 
+    /**
+     * Deletes the selected study group (that is displaying in the modal)
+     */
+    deleteStudyGroup = async () => {
+        try {
+            const response = await NetworkRequest.delete("/api/study-groups", {
+                id: this.state.groupSelectedForEditing.id,
+                courseId: this.state.groupSelectedForEditing.courseId
+            });
+            if (response.ok) {
+                this.closeEditDialog();
+            }
+            else {
+                alert("Could not delete study group");
+            }
+        }
+        catch (exception) {
+            console.error(exception);
+        }
+
+    };
+
+    /**
+     * Saves the selected study group info into state so it can be displayed
+     * in the edit modal that pops up
+     *
+     * @param groupSelectedForEditing full studyGroup object
+     */
     displayEditModal = (groupSelectedForEditing) => {
         this.setState({
             showEditDialog: true,
@@ -232,12 +263,16 @@ export default class StudyGroups extends React.Component {
         });
     };
 
+    /**
+     * Receives data from child component and submits to API endpoint
+     * On success the WebSocket will update and the dialog will close
+     */
     submitChildData = async (url, submitData) => {
         try {
             submitData.id = this.state.groupSelectedForEditing.id;
             const response = await NetworkRequest.put(url, submitData);
             if (response.ok) {
-                alert("Success");
+                this.closeEditDialog();
             }
             else {
                 alert("Invalid input");
@@ -428,6 +463,7 @@ export default class StudyGroups extends React.Component {
                             submit={this.submitChildData}/>
                     </DialogContent>
                     <DialogActions>
+                        <Button onClick={() => this.deleteStudyGroup()} style={{marginRight: "auto"}}>Delete</Button>
                         <Button onClick={() => this.closeEditDialog()}>Cancel</Button>
                         <Button color="primary" onClick={() => this.submitGroupEdits()}>Submit</Button>
                     </DialogActions>
