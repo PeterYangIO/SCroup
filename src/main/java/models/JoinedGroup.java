@@ -67,7 +67,7 @@ public class JoinedGroup {
                                 results.getTimestamp(9),
                                 results.getTimestamp(10),
                                 true,
-                                ""
+                                results.getString(11)
                         )
                 );
             }

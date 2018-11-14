@@ -19,7 +19,7 @@ public class JoinGroup extends HttpServlet {
         response.setContentType("application/json");
 
         String groupIdParam = request.getParameter("groupId");
-        if (!groupIdParam.isEmpty()) {
+        if (groupIdParam != null && !groupIdParam.isEmpty()) {
             try {
                 int groupId = Integer.parseInt(groupIdParam);
                 ArrayList<User> users = JoinedGroup.dbSelectByGroup(groupId);

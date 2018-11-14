@@ -18,6 +18,7 @@ import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import Divider from "@material-ui/core/Divider/Divider";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Link} from "react-router-dom";
+import JoinedGroups from "./JoinedGroups";
 
 @withStyles({
     title: {
@@ -103,16 +104,9 @@ export default class HeaderBar extends React.Component {
                     anchor="left"
                     open={drawerOpen}
                     onClose={this.handleDrawerClose}>
-                    <Typography component="h1" variant="h6" className={classes.logo}>Logo</Typography>
+                    <Typography component="h1" variant="h6" className={classes.logo}>Your Groups</Typography>
                     <Divider/>
-                    <List component="nav">
-                        <ListItem button>
-                            <ListItemIcon>
-                                <AccountCircle/>
-                            </ListItemIcon>
-                            <ListItemText primary="Menu Item"/>
-                        </ListItem>
-                    </List>
+                    <JoinedGroups/>
                 </Drawer>
             </div>
         )
