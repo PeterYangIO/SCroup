@@ -405,7 +405,7 @@ export default class StudyGroups extends React.Component {
                                         {item.size}/{item.capacity ? item.capacity : "∞"}
                                     </Typography>
                                     <Typography className={classes.inlineText}>
-                                        {item.ownerId}'s Group
+                                        {item.ownerName}'s Group
                                     </Typography>
                                 </div>
                                 <div className={classes.column}>

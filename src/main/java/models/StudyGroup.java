@@ -20,10 +20,12 @@ public class StudyGroup {
     private Timestamp end;
     // joined is not a normalized database entry - it's a generated value by checking the joinedgroups table
     private boolean joined;
+    // from JOIN
+    private String ownerName;
 
     StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
                String location, int topic, String professor,
-               Timestamp start, Timestamp end, boolean joined) {
+               Timestamp start, Timestamp end, boolean joined, String ownerName) {
         this.id = id;
         this.courseId = courseId;
         this.ownerId = ownerId;
@@ -35,6 +37,7 @@ public class StudyGroup {
         this.start = start;
         this.end = end;
         this.joined = joined;
+        this.ownerName = ownerName;
     }
 
     public int getId() {
@@ -134,9 +137,12 @@ public class StudyGroup {
         try {
             // Join the sql filters with "AND"
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT *, " +
-                    "(SELECT COUNT(*) FROM joinedgroups WHERE userId=? AND groupId=studygroups.id) AS joined " +
-                    "FROM studygroups WHERE " + String.join(" AND ", sqlFilters)
+                "SELECT s.id, s.courseId, s.ownerId, s.capacity, s.size, s.location, s.topic, s.professor, s.start, s.end, " +
+                    "(SELECT COUNT(*) FROM joinedgroups WHERE userId=? AND groupId=s.id) AS joined, " +
+                    "CONCAT(u.firstName, ' ', u.lastName) AS ownerName " +
+                    "FROM studygroups AS s " +
+                    "JOIN users AS u ON s.ownerId = u.id " +
+                    "WHERE " + String.join(" AND ", sqlFilters)
             );
 
             // Parse the values to the correct type and match to the prepared statement
@@ -164,6 +170,7 @@ public class StudyGroup {
             // Execute the statement and serialize the result set into ArrayList<StudyGroup>
             sql.setStatement(statement);
             sql.executeQuery();
+
             ResultSet results = sql.getResults();
             while (results.next()) {
                 studyGroups.add(
@@ -178,7 +185,8 @@ public class StudyGroup {
                         results.getString(8),
                         results.getTimestamp(9),
                         results.getTimestamp(10),
-                        results.getBoolean(11)
+                        results.getBoolean(11),
+                        results.getString(12)
                     )
                 );
             }
