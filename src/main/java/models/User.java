@@ -276,7 +276,7 @@ public class User {
 		return success;
 	}
 
-	public static void forgetPassword(String email) {
+	public static boolean forgetPassword(String email) {
 		String tempPassword = generateRandomString(20);
 
 		SQLConnection sql = new SQLConnection();
@@ -294,7 +294,7 @@ public class User {
 			if (results.next()) {
 				salt = results.getBytes("salt");
 			} else {
-				return;
+				return false;
 			}
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -325,7 +325,7 @@ public class User {
 				+ "Your temporary password is: " + tempPassword
 				+ "\n If you didn't send such a request, please reset your password as soon as possible. The original password can still be used to log in your account."
 				+ "\n\nRegards,\nScroup Support Team");
-
+		return true;
 	}
 
 	// Use authorization token to get access to user object
