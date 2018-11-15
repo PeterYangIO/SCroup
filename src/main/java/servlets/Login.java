@@ -45,7 +45,7 @@ public class Login extends HttpServlet {
     // Update profile
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         User user = new Gson().fromJson(request.getReader(), models.User.class);
-        user.setAuthToken(request.getHeader("authToken"));
+        user.setAuthToken(request.getHeader("authorization"));
         if (!user.updateProfile()) {
         	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }

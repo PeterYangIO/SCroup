@@ -18,17 +18,28 @@ public class Register extends HttpServlet {
         User user = new Gson().fromJson(request.getReader(), models.User.class);
         int errorCode = user.insertToDatabase();
         if (errorCode == 0) {
-        	System.out.println("Account successfully registered!");
+        	response.setStatus(HttpServletResponse.SC_CREATED);
         }else if (errorCode == 2) {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }else {
-        	System.out.println("Internal error with account registration");
+        	response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    // Update password
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        String password = request.getParameter("password");
+        User user = new Gson().fromJson(request.getReader(), models.User.class);
+        user.setAuthToken(request.getHeader("authorization"));
+        user.setPassword(password);
+        if (!user.updatePassword()) {
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
     
     // Forget Password
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {        
-        String email = request.getHeader("email");
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        String email = request.getParameter("email");
         if (!User.forgetPassword(email)) {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
