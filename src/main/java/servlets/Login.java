@@ -26,4 +26,10 @@ public class Login extends HttpServlet {
 
         response.getWriter().print(gson.toJson(populatedUser));
     }
+    
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        User user = new Gson().fromJson(request.getReader(), models.User.class);
+        String token = user.authenticate();
+        User.onLogOut(token);
+    }
 }

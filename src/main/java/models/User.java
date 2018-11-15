@@ -224,7 +224,7 @@ public class User {
 
 		try {
 			PreparedStatement statement = sql
-					.prepareStatement("UPDATE users " + "SET firstName, lastName, year, major " + "WHERE authToken=?");
+					.prepareStatement("UPDATE users " + "SET firstName=?, lastName=?, year=?, major=? " + "WHERE authToken=?");
 
 			statement.setString(1, this.firstName);
 			statement.setString(2, this.lastName);
@@ -361,7 +361,7 @@ public class User {
 
 	// Reference from
 	// https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
-	private static byte[] getSalt() throws NoSuchAlgorithmException {
+	public static byte[] getSalt() throws NoSuchAlgorithmException {
 		// Always use a SecureRandom generator
 		SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
 		// Create array for salt
@@ -372,7 +372,7 @@ public class User {
 		return salt;
 	}
 
-	private static String generateSecurePassword(String passwordToHash, byte[] salt) {
+	public static String generateSecurePassword(String passwordToHash, byte[] salt) {
 		String generatedPassword = null;
 		try {
 			// Create MessageDigest instance for MD5
@@ -396,7 +396,7 @@ public class User {
 	}
 
 	// https://www.tutorialspoint.com/java/util/random_nextbytes.htm
-	private static String generateRandomString(int length) {
+	public static String generateRandomString(int length) {
 		SecureRandom random = new SecureRandom();
 		byte bytes[] = new byte[length];
 		random.nextBytes(bytes);
