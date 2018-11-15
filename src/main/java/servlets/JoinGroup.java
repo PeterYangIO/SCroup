@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 @WebServlet("/api/join-group")
 public class JoinGroup extends HttpServlet {
@@ -22,7 +23,7 @@ public class JoinGroup extends HttpServlet {
         if (groupIdParam != null && !groupIdParam.isEmpty()) {
             try {
                 int groupId = Integer.parseInt(groupIdParam);
-                ArrayList<User> users = JoinedGroup.dbSelectByGroup(groupId);
+                Set<User> users = JoinedGroup.dbSelectByGroup(groupId);
                 response.getWriter().print(gson.toJson(users));
             }
             catch (NumberFormatException nfe) {
