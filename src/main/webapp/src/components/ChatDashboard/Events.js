@@ -37,6 +37,10 @@ const styles = theme => ({
     dateAndTime: {
         marginTop: 10,
         marginBottom: 10
+    },
+    overflow: {
+        height: 250,
+        overflowY: 'scroll'
     }
 });
 
@@ -105,13 +109,15 @@ class Events extends Component {
             title: this.state.eventTitle,
             location: this.state.eventLocation,
             date: this.state.date,
-            time: this.state.time
+            time: this.state.time,
+            groupId: 1
         };
         this.addEvent(item);
         this.handleClose();
     }
 
     addEvent = (event) => {
+        console.log(event);
         return fetch('http://localhost:8080/api/event', {
             method: 'POST',
             headers: {
@@ -152,7 +158,7 @@ class Events extends Component {
                         Upcoming Events
                     </Typography>
                 </div>
-                <div>
+                <div className={classes.overflow}>
                     {this.state.events.map(e => {
                         return(
                             <ExpansionPanel key={e.title}>

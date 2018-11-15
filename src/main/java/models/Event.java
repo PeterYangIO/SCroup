@@ -28,8 +28,9 @@ public class Event {
         SQLConnection sql = new SQLConnection();
         try {
             PreparedStatement statement = sql.prepareStatement(
-                    "SELECT * FROM events WHERE group_id=" + groupId
+                    "SELECT * FROM events WHERE group_id=?"
             );
+            statement.setInt(1, groupId);
             sql.setStatement(statement);
             sql.executeQuery();
             ResultSet results = sql.getResults();
@@ -45,6 +46,7 @@ public class Event {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            events = null;
         }
         finally {
             sql.close();

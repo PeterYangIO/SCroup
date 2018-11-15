@@ -18,8 +18,6 @@ import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import FormControl from "@material-ui/core/FormControl/FormControl";
-import * as rr from "react-router";
-const Redirect = rr.Redirect;
 
 @withStyles(theme => ({
     column: {
@@ -49,7 +47,6 @@ export default class StudyGroups extends React.Component {
         super(props);
 
         this.state = {
-            join: 0,
             studyGroups: undefined,
             expandedPanel: -1,
 
@@ -124,17 +121,9 @@ export default class StudyGroups extends React.Component {
         });
     };
 
-    handleClick = (e) => {
-        this.setState({
-            join: 1
-        })
-    };
-
     render() {
         const {classes, course} = this.props;
-        if (this.state.join === 1) {
-            return <Redirect to="/dashboard"/>
-        }
+
         if (course === undefined) {
             return (
                 <Typography component="p" variant="body1">
@@ -253,7 +242,7 @@ export default class StudyGroups extends React.Component {
                             </ExpansionPanelDetails>
                             <Divider/>
                             <ExpansionPanelActions>
-                                <Button color="primary" size="small" onClick={this.handleClick}>
+                                <Button color="primary" size="small">
                                     Join
                                 </Button>
                             </ExpansionPanelActions>

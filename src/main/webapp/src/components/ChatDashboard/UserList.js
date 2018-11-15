@@ -17,6 +17,10 @@ const styles = theme => ({
     users: {
         textAlign: 'center'
     },
+    overflow: {
+        height: 170,
+        overflowY: 'scroll'
+    }
 });
 
 class UserList extends Component {
@@ -29,7 +33,7 @@ class UserList extends Component {
                         Group Members
                     </Typography>
                 </div>
-                <div>
+                <div className={classes.overflow}>
                     <List>
                         <ListItem dense button>
                             <ListItemText className={classes.users}>Nhan Tran</ListItemText>
