@@ -28,8 +28,7 @@ public class Login extends HttpServlet {
     }
     
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {        
-        User user = new Gson().fromJson(request.getReader(), models.User.class);
-        String token = user.authenticate();
+        String token = request.getHeader("autToken");
         User.onLogOut(token);
     }
 }
