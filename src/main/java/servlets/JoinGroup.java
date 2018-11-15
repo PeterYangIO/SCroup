@@ -19,7 +19,7 @@ public class JoinGroup extends HttpServlet {
         response.setContentType("application/json");
 
         String groupIdParam = request.getParameter("groupId");
-        if (!groupIdParam.isEmpty()) {
+        if (groupIdParam != null && !groupIdParam.isEmpty()) {
             try {
                 int groupId = Integer.parseInt(groupIdParam);
                 ArrayList<User> users = JoinedGroup.dbSelectByGroup(groupId);
@@ -30,8 +30,9 @@ public class JoinGroup extends HttpServlet {
             }
         }
         else {
-            // TODO Get user from authorization token
-            ArrayList<StudyGroup> studyGroups = JoinedGroup.dbSelectByUser(1);
+            User user = User.lookUpByAuthToken(request.getHeader("authorization"));
+            int userId = user == null ? -1 : user.getID();
+            ArrayList<StudyGroup> studyGroups = JoinedGroup.dbSelectByUser(userId);
             response.getWriter().print(gson.toJson(studyGroups));
         }
     }

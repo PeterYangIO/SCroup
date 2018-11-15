@@ -4,7 +4,7 @@ CREATE TABLE studygroups (
   courseId  INT NOT NULL,
   ownerId   INT NOT NULL,
   capacity  INT,
-  size      INT NOT NULL DEFAULT 1,
+  size      INT NOT NULL DEFAULT 0,
   location  VARCHAR(128),
   topic     INT,
   professor VARCHAR(128),

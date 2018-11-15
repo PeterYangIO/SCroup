@@ -2,8 +2,8 @@ import React from "react";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import AppBar from "@material-ui/core/AppBar/AppBar";
-import LoginForm from "../components/Login/LoginForm";
-import SignUpForm from "../components/Login/SignUpForm";
+import LoginForm from "../components/login/LoginForm";
+import SignUpForm from "../components/login/SignUpForm";
 import withStyles from "@material-ui/core/styles/withStyles";
 import HeaderBar from "../components/common/HeaderBar";
 

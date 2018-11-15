@@ -18,10 +18,22 @@ import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import FormControl from "@material-ui/core/FormControl/FormControl";
+import {Link} from "react-router-dom";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import StudyGroupForm from "./StudyGroupForm";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 
 @withStyles(theme => ({
     column: {
         width: "33.3%"
+    },
+    dialog: {
+        marginTop: "1rem",
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-between"
     },
     filters: {
         display: "flex",
@@ -49,8 +61,13 @@ export default class StudyGroups extends React.Component {
         this.state = {
             webSocket: undefined,
 
+            authenticated: false,
             studyGroups: undefined,
             expandedPanel: -1,
+
+            // Edit modal
+            showEditDialog: false,
+            groupSelectedForEditing: undefined,
 
             // Filters
             capacityMin: "",
@@ -62,6 +79,8 @@ export default class StudyGroups extends React.Component {
             after: moment().format("YYYY-MM-DDTHH:mm"),
             before: ""
         };
+
+        this.studyGroupFormRef = React.createRef();
     }
 
     async componentDidMount() {
@@ -102,17 +121,25 @@ export default class StudyGroups extends React.Component {
         }
         const webSocket = new WebSocket(`ws://${window.location.host}/study-groups/${this.props.course.id}`);
         webSocket.onopen = () => {
-            // TODO send authentication
-            console.log(`opened ${webSocket.url}`);
+            webSocket.send(sessionStorage.getItem("authToken"));
         };
 
         webSocket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
-            if (data.success) {
-                await this.getData();
-            }
-            else {
-                console.error(data.message);
+            switch (data.message) {
+                case "AUTHENTICATION":
+                    this.setState({
+                        authenticated: data.success
+                    });
+                    break;
+                case "REFRESH":
+                    await this.getData();
+                    break;
+                case "INVALID":
+                    alert("Could not process your request");
+                    break;
+                default:
+                    console.error(data.message, "not implemented");
             }
         };
 
@@ -129,6 +156,50 @@ export default class StudyGroups extends React.Component {
     componentWillUnmount() {
         this.state.webSocket && this.state.webSocket.close();
     }
+
+    /**
+     * Closes edit dialog
+     */
+    closeEditDialog = () => {
+        this.setState({
+            showEditDialog: false
+        });
+    };
+
+    /**
+     * Deletes the selected study group (that is displaying in the modal)
+     */
+    deleteStudyGroup = async () => {
+        try {
+            const response = await NetworkRequest.delete("/api/study-groups", {
+                id: this.state.groupSelectedForEditing.id,
+                courseId: this.state.groupSelectedForEditing.courseId
+            });
+            if (response.ok) {
+                this.closeEditDialog();
+            }
+            else {
+                alert("Could not delete study group");
+            }
+        }
+        catch (exception) {
+            console.error(exception);
+        }
+
+    };
+
+    /**
+     * Saves the selected study group info into state so it can be displayed
+     * in the edit modal that pops up
+     *
+     * @param groupSelectedForEditing full studyGroup object
+     */
+    displayEditModal = (groupSelectedForEditing) => {
+        this.setState({
+            showEditDialog: true,
+            groupSelectedForEditing
+        });
+    };
 
     /**
      * Makes request to /api/study-groups (not the WebSocket)
@@ -193,6 +264,30 @@ export default class StudyGroups extends React.Component {
     };
 
     /**
+     * Receives data from child component and submits to API endpoint
+     * On success the WebSocket will update and the dialog will close
+     */
+    submitChildData = async (url, submitData) => {
+        try {
+            submitData.id = this.state.groupSelectedForEditing.id;
+            const response = await NetworkRequest.put(url, submitData);
+            if (response.ok) {
+                this.closeEditDialog();
+            }
+            else {
+                alert("Invalid input");
+            }
+        }
+        catch (exception) {
+            console.error(error);
+        }
+    };
+
+    submitGroupEdits = async () => {
+        await this.studyGroupFormRef.current.submit();
+    };
+
+    /**
      * Communicates with WebSocket to join / leave group
      */
     toggleJoin = (groupId, joined) => {
@@ -214,6 +309,7 @@ export default class StudyGroups extends React.Component {
                 </Typography>
             );
         }
+
         return (
             <>
                 <Typography component="h2" variant="h2">{course.department}-{course.number}</Typography>
@@ -306,10 +402,10 @@ export default class StudyGroups extends React.Component {
                                     <Typography
                                         className={`${classes.secondaryText} ${classes.inlineText}`}
                                         style={{marginRight: "1rem"}}>
-                                        {item.size}/{item.capacity}
+                                        {item.size}/{item.capacity ? item.capacity : "∞"}
                                     </Typography>
                                     <Typography className={classes.inlineText}>
-                                        {item.ownerId}'s Group
+                                        {item.ownerName}'s Group
                                     </Typography>
                                 </div>
                                 <div className={classes.column}>
@@ -328,15 +424,50 @@ export default class StudyGroups extends React.Component {
                                 <Typography>Professor: {item.professor ? item.professor : "N/A"}</Typography>
                             </ExpansionPanelDetails>
                             <Divider/>
-                            <ExpansionPanelActions>
-                                <Button color="primary" size="small"
-                                        onClick={() => this.toggleJoin(item.id, item.joined)}>
-                                    {item.joined ? "Leave" : "Join"}
-                                </Button>
-                            </ExpansionPanelActions>
+                            {
+                                this.state.authenticated &&
+                                <ExpansionPanelActions>
+                                    {
+                                        item.joined &&
+                                        <Button
+                                            color="primary" size="small" variant="contained"
+                                            component={Link} to="/">
+                                            Chat Room
+                                        </Button>
+                                    }
+                                    {
+                                        item.ownerId === JSON.parse(sessionStorage.getItem("user")).id &&
+                                        <Button color="primary" size="small" onClick={() => this.displayEditModal(item)}>
+                                            Edit
+                                        </Button>
+                                    }
+                                    <Button color="primary" size="small"
+                                            onClick={() => this.toggleJoin(item.id, item.joined)}>
+                                        {item.joined ? "Leave" : "Join"}
+                                    </Button>
+                                </ExpansionPanelActions>
+                            }
                         </ExpansionPanel>
                     ))
                 }
+
+                <Dialog
+                    open={this.state.showEditDialog}
+                    onClose={this.closeEditDialog}>
+                    <DialogTitle>Edit Study Group</DialogTitle>
+                    <DialogContent className={classes.dialog}>
+                        <StudyGroupForm
+                            {...this.state.groupSelectedForEditing}
+                            innerRef={this.studyGroupFormRef}
+                            departments={this.props.departments}
+                            submit={this.submitChildData}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.deleteStudyGroup()} style={{marginRight: "auto"}}>Delete</Button>
+                        <Button onClick={() => this.closeEditDialog()}>Cancel</Button>
+                        <Button color="primary" onClick={() => this.submitGroupEdits()}>Submit</Button>
+                    </DialogActions>
+                </Dialog>
             </>
         );
     }

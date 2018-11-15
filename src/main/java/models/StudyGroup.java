@@ -2,10 +2,7 @@ package models;
 
 import util.SQLConnection;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
@@ -23,10 +20,12 @@ public class StudyGroup {
     private Timestamp end;
     // joined is not a normalized database entry - it's a generated value by checking the joinedgroups table
     private boolean joined;
+    // from JOIN
+    private String ownerName;
 
     StudyGroup(int id, int courseId, int ownerId, int capacity, int size,
                String location, int topic, String professor,
-               Timestamp start, Timestamp end, boolean joined) {
+               Timestamp start, Timestamp end, boolean joined, String ownerName) {
         this.id = id;
         this.courseId = courseId;
         this.ownerId = ownerId;
@@ -38,6 +37,7 @@ public class StudyGroup {
         this.start = start;
         this.end = end;
         this.joined = joined;
+        this.ownerName = ownerName;
     }
 
     public int getId() {
@@ -78,6 +78,10 @@ public class StudyGroup {
 
     public Timestamp getStart() {
         return start;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     /**
@@ -133,9 +137,12 @@ public class StudyGroup {
         try {
             // Join the sql filters with "AND"
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT *, " +
-                    "(SELECT COUNT(*) FROM joinedgroups WHERE userId=? AND groupId=studygroups.id) AS joined " +
-                    "FROM studygroups WHERE " + String.join(" AND ", sqlFilters)
+                "SELECT s.id, s.courseId, s.ownerId, s.capacity, s.size, s.location, s.topic, s.professor, s.start, s.end, " +
+                    "(SELECT COUNT(*) FROM joinedgroups WHERE userId=? AND groupId=s.id) AS joined, " +
+                    "CONCAT(u.firstName, ' ', u.lastName) AS ownerName " +
+                    "FROM studygroups AS s " +
+                    "JOIN users AS u ON s.ownerId = u.id " +
+                    "WHERE " + String.join(" AND ", sqlFilters)
             );
 
             // Parse the values to the correct type and match to the prepared statement
@@ -163,6 +170,7 @@ public class StudyGroup {
             // Execute the statement and serialize the result set into ArrayList<StudyGroup>
             sql.setStatement(statement);
             sql.executeQuery();
+
             ResultSet results = sql.getResults();
             while (results.next()) {
                 studyGroups.add(
@@ -177,7 +185,8 @@ public class StudyGroup {
                         results.getString(8),
                         results.getTimestamp(9),
                         results.getTimestamp(10),
-                        results.getBoolean(11)
+                        results.getBoolean(11),
+                        results.getString(12)
                     )
                 );
             }
@@ -191,6 +200,33 @@ public class StudyGroup {
         }
 
         return studyGroups;
+    }
+
+    public static int dbSelectOwnerId(int groupId) {
+        int ownerId = -1;
+        SQLConnection sql = new SQLConnection();
+
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                "SELECT ownerId FROM studygroups WHERE id=?"
+            );
+
+            statement.setInt(1, groupId);
+            sql.setStatement(statement);
+            sql.executeQuery();
+            ResultSet results = sql.getResults();
+            if (results.next()) {
+                ownerId = results.getInt(1);
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            sql.close();
+        }
+
+        return ownerId;
     }
 
     /**
@@ -218,7 +254,8 @@ public class StudyGroup {
             PreparedStatement statement = sql.prepareStatement(
                 "INSERT INTO studygroups " +
                     "(courseId, ownerId, capacity, location, topic, professor, start, end) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS
             );
             statement.setInt(1, this.courseId);
             statement.setInt(2, this.ownerId);
@@ -231,6 +268,14 @@ public class StudyGroup {
 
             sql.setStatement(statement);
             sql.executeUpdate();
+
+            // After creating the study group join the owner to the group
+            ResultSet results = statement.getGeneratedKeys();
+            if (results.next()) {
+                int groupId = results.getInt(1);
+                JoinedGroup joinedGroup = new JoinedGroup(this.ownerId, groupId);
+                joinedGroup.dbInsert();
+            }
         }
         catch (SQLException sqle) {
             sqle.printStackTrace();
@@ -292,11 +337,22 @@ public class StudyGroup {
         SQLConnection sql = new SQLConnection();
 
         try {
-            PreparedStatement statement = sql.prepareStatement(
+            // 1. Unjoin all users in the study group
+            PreparedStatement unjoinUsers = sql.prepareStatement(
+                "DELETE FROM joinedgroups WHERE groupId=?"
+            );
+            unjoinUsers.setInt(1, this.id);
+            sql.setStatement(unjoinUsers);
+            sql.executeUpdate();
+
+            // 2. Delete the study group
+            PreparedStatement deleteStudyGroup = sql.prepareStatement(
                 "DELETE FROM studygroups WHERE id=?"
             );
 
-            statement.setInt(1, this.id);
+            deleteStudyGroup.setInt(1, this.id);
+            sql.setStatement(deleteStudyGroup);
+            sql.executeUpdate();
         }
         catch (SQLException sqle) {
             sqle.printStackTrace();

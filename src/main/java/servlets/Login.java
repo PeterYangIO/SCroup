@@ -14,13 +14,13 @@ import java.io.IOException;
 @WebServlet("/api/login")
 public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //String email = request.getParameter("email");
-        //String password = request.getParameter("password");
-        //User user = new User(email, password);
-        
         Gson gson = new Gson();
         User user = new Gson().fromJson(request.getReader(), models.User.class);
         String token = user.authenticate();
+        if (token.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
         User populatedUser = User.lookUpByAuthToken(token);
         response.setContentType("application/json");
 

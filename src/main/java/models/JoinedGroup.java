@@ -12,6 +12,11 @@ public class JoinedGroup {
     private int userId;
     private int groupId;
 
+    JoinedGroup(int userId, int groupId) {
+        this.userId = userId;
+        this.groupId = groupId;
+    }
+
     private JoinedGroup(int id, int userId, int groupId) {
         this.id = id;
         this.userId = userId;
@@ -36,10 +41,12 @@ public class JoinedGroup {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT g.id, g.courseId, g.ownerId, g.capacity, g.size, g.location, g.topic, g.professor, g.size, g.end" +
-                    " FROM studygroups AS g" +
-                    " JOIN joinedgroups j on g.id = j.groupId" +
-                    " WHERE g.ownerId=?"
+                    "SELECT g.id, g.courseId, g.ownerId, g.capacity, g.size, g.location, g.topic, g.professor, g.size, g.end, " +
+                            "CONCAT(u.firstName, ' ', u.lastName) AS ownerName" +
+                            " FROM studygroups AS g" +
+                            " JOIN joinedgroups AS j on g.id = j.groupId" +
+                            " JOIN users AS u ON g.ownerId = u.id" +
+                            " WHERE g.ownerId=?"
             );
             statement.setInt(1, userId);
 
@@ -48,19 +55,20 @@ public class JoinedGroup {
             ResultSet results = sql.getResults();
             while (results.next()) {
                 studyGroups.add(
-                    new StudyGroup(
-                        results.getInt(1),
-                        results.getInt(2),
-                        results.getInt(3),
-                        results.getInt(4),
-                        results.getInt(5),
-                        results.getString(6),
-                        results.getInt(7),
-                        results.getString(8),
-                        results.getTimestamp(9),
-                        results.getTimestamp(10),
-                        true
-                    )
+                        new StudyGroup(
+                                results.getInt(1),
+                                results.getInt(2),
+                                results.getInt(3),
+                                results.getInt(4),
+                                results.getInt(5),
+                                results.getString(6),
+                                results.getInt(7),
+                                results.getString(8),
+                                results.getTimestamp(9),
+                                results.getTimestamp(10),
+                                true,
+                                results.getString(11)
+                        )
                 );
             }
         }
@@ -88,10 +96,10 @@ public class JoinedGroup {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "SELECT u.id, u.email, u.firstName, u.lastName, u.year, u.major" +
-                    " FROM users AS u" +
-                    " JOIN joinedgroups j on u.id = j.userId" +
-                    " WHERE j.groupId=?"
+                    "SELECT u.id, u.email, u.firstName, u.lastName, u.year, u.major" +
+                            " FROM users AS u" +
+                            " JOIN joinedgroups j on u.id = j.userId" +
+                            " WHERE j.groupId=?"
             );
             statement.setInt(1, groupId);
 
@@ -100,15 +108,15 @@ public class JoinedGroup {
             ResultSet results = sql.getResults();
             while (results.next()) {
                 users.add(
-                    new User(
-                        results.getInt(1),
-                        results.getString(2),
-                        "",
-                        results.getString(3),
-                        results.getString(4),
-                        results.getInt(5),
-                        results.getString(6)
-                    )
+                        new User(
+                                results.getInt(1),
+                                results.getString(2),
+                                "",
+                                results.getString(3),
+                                results.getString(4),
+                                results.getInt(5),
+                                results.getString(6)
+                        )
                 );
             }
         }
@@ -135,11 +143,11 @@ public class JoinedGroup {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "INSERT INTO joinedgroups (userId, groupId)" +
-                    " SELECT ?, ?" +
-                    " FROM joinedgroups" +
-                    " WHERE userId=? AND groupId=?" +
-                    " HAVING COUNT(*) = 0"
+                    "INSERT INTO joinedgroups (userId, groupId)" +
+                            " SELECT ?, ?" +
+                            " FROM joinedgroups" +
+                            " WHERE userId=? AND groupId=?" +
+                            " HAVING COUNT(*) = 0"
             );
             statement.setInt(1, this.userId);
             statement.setInt(2, this.groupId);
@@ -162,7 +170,7 @@ public class JoinedGroup {
             sql = new SQLConnection();
             try {
                 PreparedStatement statement = sql.prepareStatement(
-                    "UPDATE studygroups SET size=size + 1 WHERE id=?"
+                        "UPDATE studygroups SET size=size + 1 WHERE id=?"
                 );
                 statement.setInt(1, this.groupId);
 
@@ -192,7 +200,7 @@ public class JoinedGroup {
 
         try {
             PreparedStatement statement = sql.prepareStatement(
-                "DELETE FROM joinedgroups WHERE userId=? AND groupId=?"
+                    "DELETE FROM joinedgroups WHERE userId=? AND groupId=?"
             );
             statement.setInt(1, this.userId);
             statement.setInt(2, this.groupId);
@@ -213,7 +221,7 @@ public class JoinedGroup {
             sql = new SQLConnection();
             try {
                 PreparedStatement statement = sql.prepareStatement(
-                    "UPDATE studygroups SET size=size - 1 WHERE id=?"
+                        "UPDATE studygroups SET size=size - 1 WHERE id=?"
                 );
                 statement.setInt(1, this.groupId);
 
