@@ -74,10 +74,10 @@ export default class StudyGroups extends React.Component {
             capacityMax: "",
             hideFull: false,
             location: "",
-            topic: "",
+            topic: "any",
             professor: "",
-            after: moment().format("YYYY-MM-DDTHH:mm"),
-            before: ""
+            afterTime: "",
+            beforeTime: ""
         };
 
         this.studyGroupFormRef = React.createRef();
@@ -210,14 +210,14 @@ export default class StudyGroups extends React.Component {
             return;
         }
         try {
-            const {capacityMin, capacityMax, hideFull, location, topic, professor, after, before} = this.state;
+            const {capacityMin, capacityMax, hideFull, location, topic, professor, afterTime, beforeTime} = this.state;
             const filterParameters = {
                 courseId: this.props.course.id
             };
-            if (typeof(capacityMin) === "number")
-                filterParameters.capacityMin = capacityMin;
-            if (typeof(capacityMax) === "number")
-                filterParameters.capacityMax = capacityMax;
+            if (capacityMin !== "")
+                filterParameters.capacityMin = parseInt(capacityMin);
+            if (capacityMax !== "")
+                filterParameters.capacityMax = parseInt(capacityMax);
             if (hideFull)
                 filterParameters.hideFull = hideFull;
             if (location)
@@ -226,10 +226,14 @@ export default class StudyGroups extends React.Component {
                 filterParameters.topic = topic;
             if (professor)
                 filterParameters.professor = professor;
-            if (after)
-                filterParameters.after = new Date(after).toISOString();
-            if (before)
-                filterParameters.before = new Date(before).toISOString();
+
+            if (afterTime)
+                filterParameters.afterTime = `${afterTime}:00`;
+            if (beforeTime)
+                filterParameters.beforeTime = `${beforeTime}:00`;
+            if (afterTime || beforeTime) {
+                filterParameters.timeZone = moment().format("Z");
+            }
 
             const response = await NetworkRequest.get("/api/study-groups", filterParameters);
             if (response.ok) {
@@ -351,7 +355,7 @@ export default class StudyGroups extends React.Component {
                                 name: "topic",
                                 id: "topic"
                             }}>
-                            <MenuItem value=""><em>Any</em></MenuItem>
+                            <MenuItem value="any"><em>Any</em></MenuItem>
                             <MenuItem value={0}>General Study</MenuItem>
                             <MenuItem value={1}>Homework</MenuItem>
                             <MenuItem value={2}>Quiz</MenuItem>
@@ -367,20 +371,20 @@ export default class StudyGroups extends React.Component {
                         onChange={this.handleChange}/>
                     <TextField
                         className={classes.filterWidth}
-                        type="datetime-local"
-                        name="after"
+                        type="time"
+                        name="afterTime"
                         label="After"
-                        value={this.state.after}
+                        value={this.state.afterTime}
                         onChange={this.handleChange}
                         InputLabelProps={{
                             shrink: true
                         }}/>
                     <TextField
                         className={classes.filterWidth}
-                        type="datetime-local"
-                        name="before"
+                        type="time"
+                        name="beforeTime"
                         label="Before"
-                        value={this.state.before}
+                        value={this.state.beforeTime}
                         onChange={this.handleChange}
                         InputLabelProps={{
                             shrink: true
@@ -389,7 +393,7 @@ export default class StudyGroups extends React.Component {
 
                 {
                     this.state.studyGroups && this.state.studyGroups.length === 0 &&
-                    <Typography>No study groups for this course.</Typography>
+                    <Typography>No study groups for this course that meet your search requirements. Expand your search or create your own!</Typography>
                 }
                 {
                     this.state.studyGroups && this.state.studyGroups.length > 0 && this.state.studyGroups.map(item => (
@@ -415,7 +419,7 @@ export default class StudyGroups extends React.Component {
                                 </div>
                                 <div className={classes.column}>
                                     <Typography className={classes.secondaryText}>
-                                        {moment(item.start).format("M/D, h:mma")} – {moment(item.end).format("h:mma")}
+                                        {item.start ? moment(item.start).format("M/D, h:mma") : "N/A"} – {item.end ? moment(item.end).format("h:mma") : "N/A"}
                                     </Typography>
                                 </div>
                             </ExpansionPanelSummary>

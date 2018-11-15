@@ -3,7 +3,6 @@ package models;
 import util.SQLConnection;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -93,8 +92,8 @@ public class StudyGroup {
      * location: optional LIKE
      * topic: optional exact match
      * professor: optional LIKE
-     * after: optional start >= value
-     * before: optional start <= value
+     * afterHour: optional start's hour >= value
+     * beforeHour: optional start's hour <= value
      *
      * @param filterParams from http query parameters
      * @param userId       used to check if user is joined to the group
@@ -109,10 +108,10 @@ public class StudyGroup {
         for (Map.Entry<String, String> entry : filterParams.entrySet()) {
             switch (entry.getKey()) {
                 case "capacityMin":
-                    sqlFilters.add("capacity >= ?");
+                    sqlFilters.add("(capacity >= ? OR capacity = 0)");
                     break;
                 case "capacityMax":
-                    sqlFilters.add("capacity <= ?");
+                    sqlFilters.add("(capacity <= ? AND capacity != 0)");
                     break;
                 case "hideFull":
                     if (entry.getValue().equalsIgnoreCase("true")) {
@@ -123,11 +122,13 @@ public class StudyGroup {
                 case "professor":
                     sqlFilters.add("LOWER(" + entry.getKey() + ")" + " LIKE LOWER(?)");
                     break;
-                case "after":
-                    sqlFilters.add("start >= ?");
+                case "afterTime":
+                    sqlFilters.add("STRCMP(TIME(CONVERT_TZ(start, @@session.time_zone, ?)), ?) >= 0");
                     break;
-                case "before":
-                    sqlFilters.add("start <= ?");
+                case "beforeTime":
+                    sqlFilters.add("STRCMP(TIME(CONVERT_TZ(start, @@session.time_zone, ?)), ?) <= 0");
+                    break;
+                case "timeZone":
                     break;
                 default:
                     sqlFilters.add(entry.getKey() + " = ?");
@@ -142,7 +143,8 @@ public class StudyGroup {
                     "CONCAT(u.firstName, ' ', u.lastName) AS ownerName " +
                     "FROM studygroups AS s " +
                     "JOIN users AS u ON s.ownerId = u.id " +
-                    "WHERE " + String.join(" AND ", sqlFilters)
+                    "WHERE " + String.join(" AND ", sqlFilters) + " " +
+                    "ORDER BY start, topic, ownerName, id"
             );
 
             // Parse the values to the correct type and match to the prepared statement
@@ -152,13 +154,15 @@ public class StudyGroup {
                 switch (entry.getKey()) {
                     case "location":
                     case "professor":
-                        statement.setString(i, entry.getValue());
+                        statement.setString(i, "%" + entry.getValue() + "%");
                         break;
-                    case "after":
-                    case "before":
-                        statement.setTimestamp(i, Timestamp.from(Instant.parse(entry.getValue())));
+                    case "afterTime":
+                    case "beforeTime":
+                        statement.setString(i, filterParams.get("timeZone"));
+                        statement.setString(++i, entry.getValue());
                         break;
                     case "hideFull":
+                    case "timeZone":
                         i--;
                         break;
                     default:
