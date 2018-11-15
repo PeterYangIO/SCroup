@@ -1,4 +1,36 @@
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import util.SQLConnection;
+
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 class UserUnitTests {
+	
+	@BeforeAll
+    static void initAll() {
+        SQLConnection sql = new SQLConnection(true);
+
+        try {
+            PreparedStatement insertUsers = sql.prepareStatement(
+                "INSERT INTO users " +
+                    "(email, password, salt, firstName, lastName) VALUES " +
+                    "('tommytrojan@usc.edu', 'password', '12345678901', 'Tommy', 'Trojan')"
+            );
+            sql.setStatement(insertUsers);
+            sql.executeUpdate();
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+            fail("Could not set up test data");
+        }
+        finally {
+            sql.close();
+        }
+    }
 
     @Test
     void validAuthenticate() {
@@ -133,5 +165,30 @@ class UserUnitTests {
             "tommy", null, 18, "CSCI");
         int code = user.insertToDatabase();
         assertTrue(code == 2);
+    }
+    
+    @AfterAll
+    static void tearDownAll() {
+        SQLConnection sql = new SQLConnection(true);
+
+        try {
+            PreparedStatement deleteUsers = sql.prepareStatement(
+                "DELETE FROM users"
+            );
+            sql.setStatement(deleteUsers);
+            sql.executeUpdate();
+            PreparedStatement resetUsersAutoIncrement = sql.prepareStatement(
+                "ALTER TABLE users AUTO_INCREMENT = 1"
+            );
+            sql.setStatement(resetUsersAutoIncrement);
+            sql.executeUpdate();
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+            fail("Could not tear down properly");
+        }
+        finally {
+            sql.close();
+        }
     }
 }
