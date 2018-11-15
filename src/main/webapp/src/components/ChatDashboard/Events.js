@@ -52,20 +52,44 @@ class Events extends Component {
         this.onChangeTime = this.onChangeTime.bind(this);
         this.state = {
             modalOpen: false,
-            events: [
-                {
-                    title: 'Study for Midterm',
-                    location: 'THH',
-                    date: '2017-05-12',
-                    time: '12:59'
-                }
-            ],
+            events: [],
             eventTitle: '',
             eventLocation: '',
             date: null,
             time: null
         }
     }
+
+    componentDidMount() {
+        this.getEvent();
+    }
+
+    getEvent = () => {
+        console.log("here");
+        this.setState({
+            events: []
+        });
+        fetch("http://localhost:8080/api/event?id=1")
+            .then(res => res.json())
+            .then(
+                (res) => {
+                    console.log(res);
+                    const events = [];
+                    res.forEach(el => {
+                        events.push({
+                            title: el.title,
+                            location: el.location,
+                            date: el.date,
+                            time: el.time
+                        })
+                    });
+                    this.setState({
+                        events: this.state.events.concat(events)
+                    })
+                }
+            )
+    };
+
 
     handleOpen(e) {
         this.setState({ modalOpen: true });
@@ -77,17 +101,31 @@ class Events extends Component {
 
     handleAddEvent(e) {
         e.preventDefault();
-        var item = {
+        const item = {
             title: this.state.eventTitle,
             location: this.state.eventLocation,
             date: this.state.date,
             time: this.state.time
         };
-        this.setState({
-            events: this.state.events.concat(item)
-        })
+        this.addEvent(item);
         this.handleClose();
     }
+
+    addEvent = (event) => {
+        return fetch('http://localhost:8080/api/event', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(event)
+        }).then((res) => {
+            this.getEvent();
+            console.log(res);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
 
     onChangeTitle(e) {
         this.setState({eventTitle: e.target.value});
