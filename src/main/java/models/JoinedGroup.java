@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class JoinedGroup {
     private int id;
@@ -90,8 +92,8 @@ public class JoinedGroup {
      * @param groupId studygroup.id
      * @return All users in a specific study group
      */
-    public static ArrayList<User> dbSelectByGroup(int groupId) {
-        ArrayList<User> users = new ArrayList<>();
+    public static Set<User> dbSelectByGroup(int groupId) {
+        HashSet<User> users = new HashSet<>();
         SQLConnection sql = new SQLConnection();
 
         try {
