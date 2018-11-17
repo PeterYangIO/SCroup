@@ -25,8 +25,6 @@ export default class StudyGroupForm extends React.Component {
             start: props.start ? moment(props.start).format("YYYY-MM-DDTHH:mm") : "",
             end: props.end ? moment(props.end).format("YYYY-MM-DDTHH:mm") : ""
         };
-
-        console.log(this.state);
     }
 
     handleChange = (event) => {

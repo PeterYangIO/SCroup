@@ -143,10 +143,6 @@ export default class StudyGroups extends React.Component {
             }
         };
 
-        webSocket.onclose = () => {
-            console.log(`closed ${webSocket.url}`);
-        };
-
         this.setState({webSocket});
     };
 
