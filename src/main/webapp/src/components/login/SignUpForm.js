@@ -144,7 +144,7 @@ export default class SignUpForm extends React.Component {
                             <Button
                                 color="secondary"
                                 size="small"
-                                onClick={() => this.props.login()}>
+                                onClick={this.props.login}>
                                 Login
                             </Button>
                             <IconButton

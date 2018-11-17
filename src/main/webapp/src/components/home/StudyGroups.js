@@ -467,9 +467,9 @@ export default class StudyGroups extends React.Component {
                             submit={this.submitChildData}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.deleteStudyGroup()} style={{marginRight: "auto"}}>Delete</Button>
-                        <Button onClick={() => this.closeEditDialog()}>Cancel</Button>
-                        <Button color="primary" onClick={() => this.submitGroupEdits()}>Submit</Button>
+                        <Button onClick={this.deleteStudyGroup} style={{marginRight: "auto"}}>Delete</Button>
+                        <Button onClick={this.closeEditDialog}>Cancel</Button>
+                        <Button color="primary" onClick={this.submitGroupEdits}>Submit</Button>
                     </DialogActions>
                 </Dialog>
             </>
