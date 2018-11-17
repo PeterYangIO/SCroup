@@ -64,7 +64,7 @@ export default class LoginForm extends React.Component {
 
         return (
             <Card className={classes.container}>
-                <form>
+                <form onSubmit={this.submit}>
                     <CardContent>
                         <TextField
                             required
@@ -88,8 +88,7 @@ export default class LoginForm extends React.Component {
                             Continue as a Guest
                         </Button>
                         <Button
-                            type="button"
-                            onClick={() => this.submit()}
+                            type="submit"
                             variant="contained"
                             color="primary">
                             Login
