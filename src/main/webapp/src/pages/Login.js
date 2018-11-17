@@ -48,7 +48,7 @@ export default class Login extends React.Component {
                             value === 0 && <LoginForm/>
                         }
                         {
-                            value === 1 && <SignUpForm/>
+                            value === 1 && <SignUpForm login={() => this.setState({value: 0})}/>
                         }
                     </div>
                 </main>

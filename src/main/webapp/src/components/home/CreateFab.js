@@ -112,8 +112,8 @@ export default class CreateFab extends React.Component {
                         }
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose()}>Cancel</Button>
-                        <Button color="primary" onClick={() => this.submit()}>Submit</Button>
+                        <Button onClick={this.handleClose}>Cancel</Button>
+                        <Button color="primary" onClick={this.submit}>Submit</Button>
                     </DialogActions>
                 </Dialog>
             </>
