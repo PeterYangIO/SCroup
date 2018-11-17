@@ -92,13 +92,10 @@ export default class Home extends React.Component {
     }
 
     async componentDidMount() {
-        // await this.getData(); TODO backend
-
-        // Dummy data
-        const dummyData = [{id: 1, department: "CSCI", number: 102, name: "Fundamentals of Computation"}, {id: 2, department: "CSCI", number: 103, name: "Introduction to Programming"}, {id: 3, department: "CSCI", number: 104, name: "Data Structures and Object Oriented Design"}, {id: 4, department: "CSCI", number: 109, name: "Introduction to Computer Science"}, {id: 5, department: "CSCI", number: 170, name: "Discrete Methods in Computer Science"}, {id: 6, department: "CSCI", number: 201, name: "Principles of Software Development"}, {id: 7, department: "CSCI", number: 270, name: "Introduction to Algorithms and Theory of Computing"}, {id: 8, department: "BUAD", number: 104, name: "Learning About International Commerce"}, {id: 9, department: "BUAD", number: 200, name: "Economic Foundations for Business"}, {id: 10, department: "BUAD", number: 201, name: "Introduction to Business for Non-Majors"}, {id: 11, department: "BUAD", number: 215, name: "Foundations of Business Finance"}];
-        setTimeout(() => this.setState({
-            departments: this._groupCourses(dummyData)
-        }), 1000);
+        const data = await this.getData();
+        this.setState({
+            departments: this._groupCourses(data)
+        });
     }
 
     getData = async () => {
