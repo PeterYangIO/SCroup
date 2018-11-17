@@ -65,6 +65,7 @@ export default class StudyGroupForm extends React.Component {
                 <FormControl className={classes.half}>
                     <InputLabel htmlFor="courseId">Course</InputLabel>
                     <Select
+                        native
                         required
                         value={this.state.courseId}
                         onChange={this.handleChange}
@@ -75,10 +76,7 @@ export default class StudyGroupForm extends React.Component {
                         {
                             Object.keys(this.props.departments).sort().map(department =>
                                 this.props.departments[department].map(course => (
-                                    <MenuItem
-                                        value={course.id}>
-                                        {course.department}-{course.number}
-                                    </MenuItem>
+                                    <option value={course.id}>{course.department}-{course.number}</option>
                                 ))
                             )
                         }

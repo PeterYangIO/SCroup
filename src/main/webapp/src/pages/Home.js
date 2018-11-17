@@ -7,12 +7,14 @@ import CreateFab from "../components/home/CreateFab";
 import List from "@material-ui/core/List/List";
 import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader/ListSubheader";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import InputBase from "@material-ui/core/InputBase/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import NetworkRequest from "../util/NetworkRequest";
 import {fade} from "@material-ui/core/styles/colorManipulator";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Collapse from "@material-ui/core/Collapse/Collapse";
 
 @withStyles(theme => ({
     container: {
@@ -20,8 +22,7 @@ import {fade} from "@material-ui/core/styles/colorManipulator";
         flexGrow: 1
     },
     coursesContainer: {
-        flexGrow: 1,
-        maxWidth: "400px",
+        width: "400px",
         borderRadius: 0,
         display: "flex",
         flexDirection: "column"
@@ -31,7 +32,7 @@ import {fade} from "@material-ui/core/styles/colorManipulator";
         overflowY: "scroll"
     },
     groupsContainer: {
-        flexGrow: 3,
+        flexGrow: 1,
         padding: "2rem",
         overflowY: "scroll"
     },
@@ -72,6 +73,9 @@ import {fade} from "@material-ui/core/styles/colorManipulator";
         paddingBottom: theme.spacing.unit,
         paddingLeft: theme.spacing.unit * 8
     },
+    nested: {
+        paddingLeft: theme.spacing.unit * 4,
+    },
     subheader: {
         background: theme.palette.common.white
     },
@@ -87,16 +91,20 @@ export default class Home extends React.Component {
         this.state = {
             query: "",
             departments: undefined,
-            selectedCourse: undefined
+            selectedCourse: undefined,
+            openedDepartment: -1
         }
     }
 
     async componentDidMount() {
-        const data = await this.getData();
-        this.setState({
-            departments: this._groupCourses(data)
-        });
+        await this.getData();
     }
+
+    closeDepartment = () => {
+        this.setState({
+            openedDepartment: -1
+        });
+    };
 
     getData = async () => {
         try {
@@ -120,6 +128,12 @@ export default class Home extends React.Component {
         this.setState({
             query: event.target.value
         }, this.getData);
+    };
+
+    openDepartment = (departmentId) => {
+        this.setState({
+            openedDepartment: departmentId
+        });
     };
 
     selectCourse = (selectedCourse) => {
@@ -169,26 +183,36 @@ export default class Home extends React.Component {
                                     : <List subheader={<li/>}>
                                         {
                                             Object.keys(this.state.departments).sort().map((department, i) => (
-                                                <li key={i}>
-                                                    <ul className={classes.ul}>
-                                                        <ListSubheader
-                                                            className={classes.subheader}>{department}
-                                                        </ListSubheader>
+                                                <div key={i}>
+                                                    <ListItem button onClick={
+                                                        this.state.openedDepartment === i
+                                                            ? () => this.closeDepartment()
+                                                            : () => this.openDepartment(i)}>
+                                                        <ListItemText primary={department}/>
+                                                        {
+                                                            this.state.openedDepartment === i
+                                                                ? <ExpandLess/>
+                                                                : <ExpandMore/>
+                                                        }
+                                                    </ListItem>
+                                                    <Collapse
+                                                        key={i}
+                                                        in={this.state.openedDepartment === i}
+                                                        timeout="auto"
+                                                        unmountOnExit>
                                                         {
                                                             this.state.departments[department].map((course, j) => (
-                                                                <ListItem
-                                                                    key={j}
-                                                                    button
-                                                                    selected={this.state.selectedCourse !== undefined && this.state.selectedCourse.id === course.id}
-                                                                    onClick={() => this.selectCourse(course)}>
-                                                                    <ListItemText
-                                                                        primary={`${course.department}-${course.number}`}
-                                                                        secondary={course.name}/>
-                                                                </ListItem>
+                                                                <List component="div" disablePadding onClick={() => this.selectCourse(course)} key={j}>
+                                                                    <ListItem button className={classes.nested}>
+                                                                        <ListItemText
+                                                                            primary={`${course.department}-${course.number}`}
+                                                                            secondary={course.name}/>
+                                                                    </ListItem>
+                                                                </List>
                                                             ))
                                                         }
-                                                    </ul>
-                                                </li>
+                                                    </Collapse>
+                                                </div>
                                             ))
                                         }
                                     </List>
@@ -204,8 +228,8 @@ export default class Home extends React.Component {
                     sessionStorage.getItem("authToken")
                     && (
                         <CreateFab
-                        course={this.state.selectedCourse}
-                        departments={this.state.departments}/>
+                            course={this.state.selectedCourse}
+                            departments={this.state.departments}/>
                     )
                 }
             </>
