@@ -7,12 +7,18 @@ import CardActions from "@material-ui/core/CardActions/CardActions";
 import withStyles from "@material-ui/core/styles/withStyles";
 import NetworkRequest from "../../util/NetworkRequest";
 import {withRouter} from "react-router-dom";
+import Snackbar from "@material-ui/core/Snackbar/Snackbar";
+import IconButton from "@material-ui/core/IconButton/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 @withRouter
 @withStyles({
     container: {
         borderTopRightRadius: 0,
         borderTopLeftRadius: 0
+    },
+    forgotPassword: {
+        width: "100%"
     }
 })
 export default class LoginForm extends React.Component {
@@ -21,12 +27,37 @@ export default class LoginForm extends React.Component {
 
         this.state = {
             email: "",
-            password: ""
+            password: "",
+
+            forgotPassword: false,
+            showSnackbar: false
         };
     }
 
     continueAsGuest = () => {
         this.props.history.push("/home");
+    };
+
+    forgotPassword = async () => {
+        try {
+        	console.log(this.state.email);
+            const response = await NetworkRequest.delete("api/register", {
+                email: this.state.email
+            });
+            if (response.ok) {
+                this.setState({
+                    showSnackbar: true
+                });
+            }else if (response.status === 429){
+            	alert("Too frequent request!");
+            }
+            else {
+                alert("No such email!");
+            }
+        }
+        catch (exception) {
+            console.error(exception);
+        }
     };
 
     handleChange = (event) => {
@@ -35,18 +66,16 @@ export default class LoginForm extends React.Component {
         });
     };
 
-    submit = async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData();
-        formData.append("email", this.state.email);
-        formData.append("password", this.state.password);
-
+    login = async () => {
         try {
-            const response = await NetworkRequest.post("api/login", formData, false);
+            const response = await NetworkRequest.post("api/login", {
+                email: this.state.email,
+                password: this.state.password
+            });
             if (response.ok) {
-                // const data = await response.json();
-                // sessionStorage.setItem("accessToken", data.accessToken);
+                const data = await response.json();
+                sessionStorage.setItem("authToken", data.authToken);
+                sessionStorage.setItem("user", JSON.stringify(data));
                 this.props.history.push("/home");
             }
             else if (response.status === 401) {
@@ -61,44 +90,85 @@ export default class LoginForm extends React.Component {
         }
     };
 
+    submit = async (event) => {
+        event.preventDefault();
+
+        this.state.forgotPassword
+            ? await this.forgotPassword()
+            : await this.login();
+    };
+
+    toggleForgotPassword = () => {
+        this.setState({
+            forgotPassword: !this.state.forgotPassword
+        });
+    };
+
     render() {
-        const {email, password} = this.state;
+        const {email, password, forgotPassword, showSnackbar} = this.state;
         const {classes} = this.props;
 
         return (
-            <Card className={classes.container}>
-                <form onSubmit={this.submit} id="login-form">
-                    <CardContent>
-                        <TextField
-                            required
-                            type="email"
-                            label="Email"
-                            name="email"
-                            value={email}
-                            onChange={this.handleChange}/>
-                        <TextField
-                            required
-                            type="password"
-                            label="Password"
-                            name="password"
-                            value={password}
-                            onChange={this.handleChange}/>
-                    </CardContent>
-                    <CardActions>
-                        <Button
-                            type="button"
-                            onClick={() => this.props.history.push("/home")}>
-                            Continue as a Guest
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary">
-                            Login
-                        </Button>
-                    </CardActions>
-                </form>
-            </Card>
+            <>
+                <Card className={classes.container}>
+                    <form onSubmit={this.submit}>
+                        <CardContent>
+                            <TextField
+                                required
+                                type="email"
+                                label="Email"
+                                name="email"
+                                value={email}
+                                onChange={this.handleChange}/>
+                            {
+                                !forgotPassword &&
+                                <TextField
+                                    required
+                                    type="password"
+                                    label="Password"
+                                    name="password"
+                                    value={password}
+                                    onChange={this.handleChange}/>
+                            }
+                            <Button
+                                className={classes.forgotPassword}
+                                type="button"
+                                size="small"
+                                onClick={this.toggleForgotPassword}>
+                                {forgotPassword ? "Go Back" : "Forgot Password"}
+                            </Button>
+                        </CardContent>
+                        <CardActions>
+                            <Button
+                                type="button"
+                                onClick={() => this.props.history.push("/home")}>
+                                Continue as a Guest
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary">
+                                {forgotPassword ? "Submit" : "Login"}
+                            </Button>
+                        </CardActions>
+                    </form>
+                </Card>
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: "bottom", horizontal: "left"
+                    }}
+                    open={showSnackbar}
+                    onClose={() => this.setState({showSnackbar: false})}
+                    message={<span>Check your email for password reset</span>}
+                    action={
+                        <IconButton
+                            color="inherit"
+                            onClick={() => this.setState({showSnackbar: false})}>
+                            <CloseIcon/>
+                        </IconButton>
+                    }/>
+            </>
         );
     }
 }
