@@ -40,6 +40,7 @@ export default class LoginForm extends React.Component {
 
     forgotPassword = async () => {
         try {
+        	console.log(this.state.email);
             const response = await NetworkRequest.delete("api/register", {
                 email: this.state.email
             });
@@ -47,9 +48,11 @@ export default class LoginForm extends React.Component {
                 this.setState({
                     showSnackbar: true
                 });
+            }else if (response.status === 429){
+            	alert("Too frequent request!");
             }
             else {
-                alert("Unknown error");
+                alert("No such email!");
             }
         }
         catch (exception) {

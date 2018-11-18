@@ -6,11 +6,18 @@ import javax.mail.internet.*;
 
 // https://www.mkyong.com/java/javamail-api-sending-email-via-gmail-smtp-example/
 public class EmailSender extends Thread{
+   	final static String username = "uscscroup@gmail.com";
+	final static String password = "scrouppassword";
+	
+	private String to, header, content;
+	
+	public EmailSender(String to, String header, String content) {
+		this.to = to;
+		this.header = header;
+		this.content = content;
+	}
 
-   public void sendMessage(String to, String header, String content) {    
-	   final String username = "uscscroup@gmail.com";
-		final String password = "scrouppassword";
-
+   public void run() {    
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");

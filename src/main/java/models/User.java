@@ -342,8 +342,7 @@ public class User {
 		}
 
 		// Send email
-		EmailSender newSender = new EmailSender();
-		newSender.sendMessage(email, "Forget Password Confirmation from SCroup", "Dear customer:\n"
+		EmailSender newSender = new EmailSender(email, "Forget Password Confirmation from SCroup", "Dear customer:\n"
 				+ "\tYou recently sent a forget password request on our SCroup website.\n"
 				+ "Your temporary password is: " + tempPassword
 				+ "\n If you didn't send such a request, please reset your password as soon as possible. The original password can still be used to log in your account."
