@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `Scroup`;
-USE `Scroup`;
+CREATE DATABASE  IF NOT EXISTS `scroup`;
+USE `scroup`;
 
 /* Drop should be with reverse order */
 DROP TABLE IF EXISTS events;

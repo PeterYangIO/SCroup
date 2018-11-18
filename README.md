@@ -24,3 +24,5 @@ The frontend is built with React. You will need `npm` to compile the source file
 During active frontend development, use `npm run build:dev` to quickly build changes; however this is a large and unoptimized file that should not be used in production
 
 For deployment, use `npm run build:prod` which will shake out unnecessary sub-modules and minify the code
+
+Note that in Eclipse you need to clean the project before building. Otherwise, .js files will not be updated automatically.

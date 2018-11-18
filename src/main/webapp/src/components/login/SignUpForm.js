@@ -58,8 +58,10 @@ export default class SignUpForm extends React.Component {
                     showSnackbar: true
                 });
             }
-            else {
-                alert("Unknown error");
+            else if (response.status === 400){
+            	alert("Account has been registered!");
+            }else{
+            	alert("Unknown error");
             }
         }
         catch (exception) {
