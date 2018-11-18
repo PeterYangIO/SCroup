@@ -20,7 +20,8 @@ CREATE TABLE users (
   lastName  VARCHAR(35)  NOT NULL,
   authToken VARCHAR(256),
   year      INT,
-  major     VARCHAR(256)
+  major     VARCHAR(256),
+  forgetTime TIMESTAMP
 );
 
 CREATE TABLE courses (
