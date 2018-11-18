@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Timestamp;
 
 public class User {
 	@Expose
@@ -285,7 +286,12 @@ public class User {
 		return success;
 	}
 
-	public static boolean forgetPassword(String email) {
+	/*
+	 * 0 means successful
+	 * 1 means no such email
+	 * 2 means too many requests
+	 */
+	public static int forgetPassword(String email) {
 		String tempPassword = generateRandomString(20);
 
 		SQLConnection sql = new SQLConnection();
@@ -302,8 +308,13 @@ public class User {
 			ResultSet results = sql.getResults();
 			if (results.next()) {
 				salt = results.getBytes("salt");
+				if (results.getTimestamp("forgetTime") != null) {
+					if (results.getTimestamp("forgetTime").getTime() - System.currentTimeMillis() < 3600000) {
+						return 2;
+					}
+				}
 			} else {
-				return false;
+				return 1;
 			}
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -314,12 +325,14 @@ public class User {
 		// Set temporary password
 		try {
 			PreparedStatement statement = sql
-					.prepareStatement("UPDATE users " + "SET tempPassword=? " + "WHERE email=?");
+					.prepareStatement("UPDATE users " + "SET tempPassword=? AND forgetTime=? " + "WHERE email=?");
 
 			String hashedPassword = generateSecurePassword(tempPassword, salt);
+			Timestamp ts = new Timestamp(System.currentTimeMillis());
 
 			statement.setString(1, hashedPassword);
-			statement.setString(2, email);
+			statement.setTimestamp(2, ts);
+			statement.setString(3, email);
 			sql.setStatement(statement);
 			sql.executeUpdate();
 		} catch (SQLException sqle) {
@@ -329,12 +342,14 @@ public class User {
 		}
 
 		// Send email
-		EmailSender.sendMessage(email, "Forget Password Confirmation from SCroup", "Dear customer:\n"
+		EmailSender newSender = new EmailSender();
+		newSender.sendMessage(email, "Forget Password Confirmation from SCroup", "Dear customer:\n"
 				+ "\tYou recently sent a forget password request on our SCroup website.\n"
 				+ "Your temporary password is: " + tempPassword
 				+ "\n If you didn't send such a request, please reset your password as soon as possible. The original password can still be used to log in your account."
 				+ "\n\nRegards,\nScroup Support Team");
-		return true;
+		newSender.start();
+		return 0;
 	}
 
 	// Use authorization token to get access to user object
