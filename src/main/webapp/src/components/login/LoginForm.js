@@ -40,9 +40,9 @@ export default class LoginForm extends React.Component {
 
     forgotPassword = async () => {
         try {
-            const formData = new FormData();
-            formData.append("email", this.state.email);
-            const response = await NetworkRequest.delete("api/register", formData, false);
+            const response = await NetworkRequest.delete("api/register", {
+                email: this.state.email
+            });
             if (response.ok) {
                 this.setState({
                     showSnackbar: true

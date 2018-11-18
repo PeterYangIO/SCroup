@@ -38,8 +38,9 @@ public class Register extends HttpServlet {
     }
     
     // Forget Password
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {        
-        String email = request.getParameter("email");
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = new Gson().fromJson(request.getReader(), models.User.class);
+        String email = user.getEmail();
         if (!User.forgetPassword(email)) {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
