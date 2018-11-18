@@ -405,12 +405,23 @@ public class User {
 	}
 
 	// https://www.tutorialspoint.com/java/util/random_nextbytes.htm
+	// https://www.baeldung.com/java-random-string
+	// Note: should not pass 0 to this function
+	// The random generated string always end with 0 and all other with letters
+	// In order to meet the requirement of password
 	public static String generateRandomString(int length) {
-		SecureRandom random = new SecureRandom();
-		byte bytes[] = new byte[length];
-		random.nextBytes(bytes);
-		String token = bytes.toString();
-		return token;
+		int leftLimit = 97; // letter 'a'
+	    int rightLimit = 122; // letter 'z'
+	    SecureRandom random = new SecureRandom();
+	    StringBuilder buffer = new StringBuilder(length);
+	    for (int i = 0; i < length-1; i++) {
+	        int randomLimitedInt = leftLimit + (int) 
+	          (random.nextFloat() * (rightLimit - leftLimit + 1));
+	        buffer.append((char) randomLimitedInt);
+	    }
+	    buffer.append('0');
+	    String generatedString = buffer.toString();
+		return generatedString;
 	}
 
 	// Getter functions
