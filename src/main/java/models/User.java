@@ -161,13 +161,14 @@ public class User {
 
 							sql.setStatement(statement);
 							sql.executeUpdate();
-							
-							this.authToken = returnedToken;
-							if (passwordUpdate) {
-								updatePassword();
-							}
 						}
 					}
+				}
+				
+				this.authToken = returnedToken;
+				
+				if (passwordUpdate) {
+					updatePassword();
 				}
 			}
 		} catch (SQLException sqle) {
@@ -199,14 +200,8 @@ public class User {
 			} else {
 				return false;
 			}
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
-		} finally {
-			sql.close();
-		}
-
-		try {
-			PreparedStatement statement = sql
+			
+			statement = sql
 					.prepareStatement("UPDATE users " + "SET password=?, tempPassword=? " + "WHERE email=?");
 
 			String hashedPassword = generateSecurePassword(this.password, salt);
