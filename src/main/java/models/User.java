@@ -233,7 +233,7 @@ public class User {
 
 		try {
 			PreparedStatement statement = sql
-					.prepareStatement("UPDATE users " + "SET firstName, lastName, year, major " + "WHERE authToken=?");
+					.prepareStatement("UPDATE users " + "SET firstName=?, lastName=?, year=?, major=? " + "WHERE authToken=?");
 
 			statement.setString(1, this.firstName);
 			statement.setString(2, this.lastName);
@@ -285,7 +285,7 @@ public class User {
 		return success;
 	}
 
-	public static void forgetPassword(String email) {
+	public static boolean forgetPassword(String email) {
 		String tempPassword = generateRandomString(20);
 
 		SQLConnection sql = new SQLConnection();
@@ -303,7 +303,7 @@ public class User {
 			if (results.next()) {
 				salt = results.getBytes("salt");
 			} else {
-				return;
+				return false;
 			}
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -334,7 +334,7 @@ public class User {
 				+ "Your temporary password is: " + tempPassword
 				+ "\n If you didn't send such a request, please reset your password as soon as possible. The original password can still be used to log in your account."
 				+ "\n\nRegards,\nScroup Support Team");
-
+		return true;
 	}
 
 	// Use authorization token to get access to user object
@@ -370,7 +370,7 @@ public class User {
 
 	// Reference from
 	// https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
-	private static byte[] getSalt() throws NoSuchAlgorithmException {
+	public static byte[] getSalt() throws NoSuchAlgorithmException {
 		// Always use a SecureRandom generator
 		SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
 		// Create array for salt
@@ -381,7 +381,7 @@ public class User {
 		return salt;
 	}
 
-	private static String generateSecurePassword(String passwordToHash, byte[] salt) {
+	public static String generateSecurePassword(String passwordToHash, byte[] salt) {
 		String generatedPassword = null;
 		try {
 			// Create MessageDigest instance for MD5
@@ -405,7 +405,7 @@ public class User {
 	}
 
 	// https://www.tutorialspoint.com/java/util/random_nextbytes.htm
-	private static String generateRandomString(int length) {
+	public static String generateRandomString(int length) {
 		SecureRandom random = new SecureRandom();
 		byte bytes[] = new byte[length];
 		random.nextBytes(bytes);

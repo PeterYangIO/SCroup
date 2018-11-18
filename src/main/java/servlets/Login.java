@@ -22,8 +22,32 @@ public class Login extends HttpServlet {
             return;
         }
         User populatedUser = User.lookUpByAuthToken(token);
+        if (populatedUser == null) {
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        
         response.setContentType("application/json");
 
         response.getWriter().print(gson.toJson(populatedUser));
+    }
+    
+    // Log out
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        String token = request.getHeader("autToken");
+        boolean out = User.onLogOut(token);
+        if (!out) {
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+    }
+    
+    // Update profile
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        User user = new Gson().fromJson(request.getReader(), models.User.class);
+        user.setAuthToken(request.getHeader("authorization"));
+        if (!user.updateProfile()) {
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 }
