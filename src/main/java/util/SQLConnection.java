@@ -20,7 +20,7 @@ public class SQLConnection {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
                 String.format(
-                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false",
+                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC",
                     SCHEMA, USER, PASSWORD
                 )
             );
@@ -35,7 +35,7 @@ public class SQLConnection {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
                 String.format(
-                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false",
+                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC",
                     test ? TEST_SCHEMA : SCHEMA, USER, PASSWORD
                 )
             );
