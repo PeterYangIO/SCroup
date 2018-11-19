@@ -50,7 +50,7 @@ export default class SignUpForm extends React.Component {
                 password: this.state.password,
                 firstName: this.state.firstName,
                 lastName: this.state.lastName,
-                year: this.state.year,
+                year: this.state.year ? parseInt(this.state.year) : 0,
                 major: this.state.major
             });
             if (response.ok) {
@@ -113,10 +113,14 @@ export default class SignUpForm extends React.Component {
                                 value={lastName}
                                 onChange={this.handleChange}/>
                             <TextField
+                                inputProps={{
+                                    pattern: "[1-3][0-9][0-9][0-9]"
+                                }}
                                 label="Year"
                                 name="year"
                                 value={year}
-                                onChange={this.handleChange}/>
+                                onChange={this.handleChange}
+                                helperText="4 digit year"/>
                             <TextField
                                 label="Major"
                                 name="major"
