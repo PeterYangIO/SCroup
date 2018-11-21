@@ -50,13 +50,13 @@ public class Course {
             		statement += "WHERE ";
             	}
             	String toAdd = Params[i];
-            	statement +=  "department LIKE '" + toAdd + "' OR ";
-            	statement +=  "number LIKE '" + toAdd + "' OR ";
+            	statement +=  "department LIKE '%" + toAdd + "%' OR ";
+            	statement +=  "number LIKE '%" + toAdd + "%' OR ";
             	if(i == (Params.length-1)) {
-            		statement +=  "name LIKE '" + toAdd + "'";
+            		statement +=  "name LIKE '%" + toAdd + "%'";
             	}
             	else {
-            		statement +=  "name LIKE '" + toAdd + "' OR ";
+            		statement +=  "name LIKE '%" + toAdd + "%' OR ";
             	}
 
             }
