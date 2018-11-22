@@ -39,7 +39,7 @@ public class Course {
         ArrayList<Course> Courses = new ArrayList<>();
         SQLConnection sql = new SQLConnection();
 
-        //System.out.println("QI length: " + queryItems.length);
+        System.out.println("QI length: " + Params.length);
         try {
             String statement = "SELECT DISTINCT * FROM courses "; 
             
@@ -59,13 +59,13 @@ public class Course {
             	}
 
             }
+
             System.out.println(statement);
            
             PreparedStatement ps = sql.prepareStatement(statement);
-            for(int i =1; i<Params.length+1; i++) {
-            	for(int j =0;j<3;j++) {
-            		ps.setString((i+j), "%" + Params[i-1] + "%");
-            		
+            for(int i =0; i<Params.length; i++) {
+            	for(int j =1;j<4;j++) {
+            		ps.setString((3*i+j), "%" + Params[i] + "%");
             	}
             	
             }
