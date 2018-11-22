@@ -49,13 +49,13 @@ public class Course {
             	if(i==0) {
             		statement += "WHERE ";
             	}
-            	statement +=  "department LIKE ? OR ";
+            	statement +=  "(department LIKE ? OR ";
             	statement +=  "number LIKE ? OR ";
             	if(i == (Params.length-1)) {
-            		statement +=  "name LIKE ? ";
+            		statement +=  "name LIKE ? )";
             	}
             	else {
-            		statement +=  "name LIKE ? OR ";
+            		statement +=  "name LIKE ? ) AND ";
             	}
 
             }
