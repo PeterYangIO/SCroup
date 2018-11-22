@@ -6,7 +6,7 @@ public class SQLConnection {
     private static final String SCHEMA = "scroup";
     private static final String TEST_SCHEMA = "scroup-test";
     private static final String USER = "root";
-    private static final String PASSWORD = "Youaremine2303!";
+    private static final String PASSWORD = "nick";
 
     private Connection connection = null;
     private ResultSet results = null;
@@ -20,7 +20,7 @@ public class SQLConnection {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
                 String.format(
-                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC",
+                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
                     SCHEMA, USER, PASSWORD
                 )
             );

@@ -44,6 +44,9 @@ public class Courses extends HttpServlet {
        
        try {
     	    String[] Params = query.split("\\s+");
+    	    if(Params[0] == "") {
+    	    	Params = new String[0];
+    	    }
             ArrayList<Course> Courses = Course.dbSelect(Params);
             Gson gson = new Gson();
             response.setContentType("application/json");
