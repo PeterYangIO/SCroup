@@ -49,20 +49,26 @@ public class Course {
             	if(i==0) {
             		statement += "WHERE ";
             	}
-            	String toAdd = Params[i];
-            	statement +=  "department LIKE '%" + toAdd + "%' OR ";
-            	statement +=  "number LIKE '%" + toAdd + "%' OR ";
+            	statement +=  "department LIKE ? OR ";
+            	statement +=  "number LIKE ? OR ";
             	if(i == (Params.length-1)) {
-            		statement +=  "name LIKE '%" + toAdd + "%'";
+            		statement +=  "name LIKE ? ";
             	}
             	else {
-            		statement +=  "name LIKE '%" + toAdd + "%' OR ";
+            		statement +=  "name LIKE ? OR ";
             	}
 
             }
-            //System.out.println(statement);
-            
+            System.out.println(statement);
+           
             PreparedStatement ps = sql.prepareStatement(statement);
+            for(int i =1; i<Params.length+1; i++) {
+            	for(int j =0;j<3;j++) {
+            		ps.setString((i+j), "%" + Params[i-1] + "%");
+            		
+            	}
+            	
+            }
             
             // Execute the statement and serialize the result set into ArrayList<Courses>
             sql.setStatement(ps);
