@@ -35,17 +35,14 @@ public class Course {
      * @return All courses that match the search parameters
      */
     public static ArrayList<Course> dbSelect(String [] Params) {
-    	//String [] queryItems = Params;
         ArrayList<Course> Courses = new ArrayList<>();
         SQLConnection sql = new SQLConnection();
 
-        System.out.println("QI length: " + Params.length);
         try {
             String statement = "SELECT DISTINCT * FROM courses "; 
             
             // add all of the search parameters to the statement
             for (int i =0; i< Params.length;i++) {
-            	
             	if(i==0) {
             		statement += "WHERE ";
             	}
@@ -57,10 +54,7 @@ public class Course {
             	else {
             		statement +=  "name LIKE ? ) AND ";
             	}
-
             }
-
-            System.out.println(statement);
            
             PreparedStatement ps = sql.prepareStatement(statement);
             for(int i =0; i<Params.length; i++) {
