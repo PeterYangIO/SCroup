@@ -6,7 +6,7 @@ public class SQLConnection {
     private static final String SCHEMA = "scroup";
     private static final String TEST_SCHEMA = "scroup-test";
     private static final String USER = "root";
-    private static final String PASSWORD = "nick";
+    private static final String PASSWORD = "root";
 
     private Connection connection = null;
     private ResultSet results = null;
