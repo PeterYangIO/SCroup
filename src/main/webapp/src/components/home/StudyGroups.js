@@ -431,7 +431,7 @@ export default class StudyGroups extends React.Component {
                                         item.joined &&
                                         <Button
                                             color="primary" size="small" variant="contained"
-                                            component={Link} to="/">
+                                            component={Link} to={`/dashboard/${item.id}`}>
                                             Chat Room
                                         </Button>
                                     }

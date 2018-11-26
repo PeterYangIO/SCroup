@@ -5,6 +5,7 @@ import CircularProgress from "@material-ui/core/CircularProgress/CircularProgres
 import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import moment from "moment";
+import {Link} from "react-router-dom";
 
 export default class JoinedGroups extends React.Component {
     constructor(props) {
@@ -55,7 +56,7 @@ export default class JoinedGroups extends React.Component {
             <List component="nav">
                 {
                     this.state.data.map((item, index) => (
-                        <ListItem button key={index}>
+                        <ListItem button key={index} component={Link} to={`/dashboard/${item.id}`}>
                             <ListItemText
                                 primary={`${item.ownerName}'s Group`}
                                 secondary={`${moment(item.start).format("M/D, h:mma")} – ${moment(item.end).format("h:mma")}`}/>

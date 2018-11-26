@@ -53,7 +53,7 @@ class Index extends React.Component {
                         <Switch>
                             <Route exact path="/" component={Login}/>
                             <Route path="/home" component={Home}/>
-                            <Route path="/dashboard" component={GroupDashboard} />
+                            <Route path="/dashboard/:id" component={GroupDashboard} />
                             <Route path="/profile" component={UserProfile} />
                         </Switch>
                     </BrowserRouter>
