@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import models.User;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 
 class UserUnitTests {
 	
