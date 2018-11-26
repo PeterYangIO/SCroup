@@ -66,6 +66,7 @@ public class ChatMessageWS {
             }
             else {
                 Message m = new Message(((User)session.getUserProperties().get("user")).getID(), groupId, message);
+                m.insertToDatabase();
               	processMessage(m, session, groupId);
             }
         }
