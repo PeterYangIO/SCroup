@@ -69,11 +69,10 @@ class Events extends Component {
     }
 
     getEvent = () => {
-        console.log("here");
         this.setState({
             events: []
         });
-        fetch("http://localhost:8080/api/event?id=1")
+        fetch("http://localhost:8080/api/event?id=" + this.props.groupId)
             .then(res => res.json())
             .then(
                 (res) => {
@@ -110,7 +109,7 @@ class Events extends Component {
             location: this.state.eventLocation,
             date: this.state.date,
             time: this.state.time,
-            groupId: 1
+            groupId: this.props.groupId
         };
         this.addEvent(item);
         this.handleClose();

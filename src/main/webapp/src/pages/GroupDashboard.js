@@ -23,11 +23,11 @@ class GroupDashboard extends React.Component {
                 <div className={classes.root}>
                     <Grid container spacing={8}>
                         <Grid item xs={2} sm={4}>
-                            <UserList />
-                            <Events />
+                            <UserList groupId={this.props.match.params.id} />
+                            <Events groupId={this.props.match.params.id} />
                         </Grid>
                         <Grid item xs={6} sm={8}>
-                            <ChatMessage />
+                            <ChatMessage groupId={this.props.match.params.id} />
                         </Grid>
                     </Grid>
                 </div>

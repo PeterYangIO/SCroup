@@ -18,8 +18,34 @@ const styles = theme => ({
 });
 
 class UserProfile extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            info : {}
+        }
+    }
+
+    componentDidMount() {
+        this.getGroup();
+    }
+
+    getGroup = () => {
+        console.log("here");
+        fetch("http://localhost:8080/api/study-groups?GetGroupInfo=" + JSON.parse(sessionStorage.getItem("user")).id)
+            .then(res => res.json())
+            .then(
+                (res) => {
+                    this.setState({
+                        info : res
+                    })
+                }
+            )
+    };
+
     render() {
         const { classes } = this.props;
+        console.log(this.state.info);
         return (
             <div>
                 <HeaderBar title="Login" />
@@ -28,8 +54,8 @@ class UserProfile extends React.Component {
                         <UserInfo/>
                     </Grid>
                     <Grid item sm={8}>
-                        <ClassList/>
-                        <GroupList/>
+                        <ClassList info={this.state.info}/>
+                        <GroupList info={this.state.info}/>
                     </Grid>
                 </Grid>
             </div>

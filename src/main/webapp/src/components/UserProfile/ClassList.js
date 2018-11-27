@@ -20,8 +20,10 @@ const styles = theme => ({
 });
 
 class ClassList extends React.Component {
+
     render() {
         const { classes } = this.props;
+        console.log(this.props.info);
         return (
             <Card className={classes.info}>
                 <div>
@@ -31,18 +33,13 @@ class ClassList extends React.Component {
                 </div>
                 <div>
                     <List>
-                        <ListItem dense button>
-                            <ListItemText className={classes.centerText}>CSCI 201</ListItemText>
-                        </ListItem>
-                        <ListItem dense button>
-                            <ListItemText className={classes.centerText}>CSCI 270</ListItemText>
-                        </ListItem>
-                        <ListItem dense button>
-                            <ListItemText className={classes.centerText}>CSCI 356</ListItemText>
-                        </ListItem>
-                        <ListItem dense button>
-                            <ListItemText className={classes.centerText}>ITP 368</ListItemText>
-                        </ListItem>
+                        {this.props.info && this.props.info.length > 0 && this.props.info.map(el => {
+                            return (
+                                <ListItem dense button key={el.name}>
+                                    <ListItemText className={classes.centerText}>{el.deparment + " " + el.courseNumber + " - " + el.courseName}</ListItemText>
+                                </ListItem>
+                            );
+                        })}
                     </List>
                 </div>
             </Card>
