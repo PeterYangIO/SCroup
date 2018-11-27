@@ -182,6 +182,10 @@ public class User {
 
 	// Update password
 	public boolean updatePassword() {
+		if (this.authToken == null || this.authToken.isEmpty()) {
+			return false;
+		}
+		
 		boolean success = true;
 		SQLConnection sql = new SQLConnection();
 		byte[] salt = null;
@@ -223,6 +227,10 @@ public class User {
 
 	// Update profile
 	public boolean updateProfile() {
+		if (this.authToken == null || this.authToken.isEmpty()) {
+			return false;
+		}
+		
 		boolean success = true;
 		SQLConnection sql = new SQLConnection();
 
@@ -252,6 +260,10 @@ public class User {
 	 	logged out
 	 	because the auth token is reset to null.**/
 	public static boolean onLogOut(String authToken) {
+		if (authToken == null || authToken.isEmpty()) {
+			return false;
+		}
+		
 		boolean success = false;
 		SQLConnection sql = new SQLConnection();
 
