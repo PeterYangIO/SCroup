@@ -17,7 +17,7 @@ export default class StudyGroupForm extends React.Component {
         super(props);
 
         this.state = {
-            courseId: props.courseId ? props.courseId: 1,
+            courseId: props.courseId ? props.courseId : props.departments[0].id,
             capacity: props.capacity ? props.capacity : "",
             location: props.location ? props.location : "",
             topic: props.topic !== undefined ? props.topic : 0,
@@ -76,7 +76,7 @@ export default class StudyGroupForm extends React.Component {
                         {
                             Object.keys(this.props.departments).sort().map(department =>
                                 this.props.departments[department].map(course => (
-                                    <option value={course.id}>{course.department}-{course.number}</option>
+                                    <option key={course.id} value={course.id}>{course.department}-{course.number}</option>
                                 ))
                             )
                         }
