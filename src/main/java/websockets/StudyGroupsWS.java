@@ -1,10 +1,7 @@
 package websockets;
 
 import com.google.gson.Gson;
-import models.JoinedGroup;
-import models.JoinedGroupRequest;
-import models.User;
-import models.WebSocketResponse;
+import models.*;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -16,7 +13,6 @@ import java.util.Vector;
 
 @ServerEndpoint(value="/study-groups/{courseId}")
 public class StudyGroupsWS {
-    private static final String AUTHENTICATION = "AUTHENTICATION";
     private static final String INVALID = "INVALID";
     private static final String REFRESH = "REFRESH";
     private static final Gson gson = new Gson();
@@ -30,13 +26,13 @@ public class StudyGroupsWS {
      */
     @OnOpen
     public void open(Session session, @PathParam("courseId") Integer courseId) {
-        if (sessionVectors.get(courseId) == null) {
+        if (StudyGroupsWS.sessionVectors.get(courseId) == null) {
             Vector<Session> sessionVector = new Vector<>();
             sessionVector.add(session);
-            sessionVectors.put(courseId, sessionVector);
+            StudyGroupsWS.sessionVectors.put(courseId, sessionVector);
         }
         else {
-            sessionVectors.get(courseId).add(session);
+            StudyGroupsWS.sessionVectors.get(courseId).add(session);
         }
     }
 
@@ -53,17 +49,7 @@ public class StudyGroupsWS {
     public void onMessage(String message, Session session, @PathParam("courseId") Integer courseId) {
         try {
             if (session.getUserProperties().get("user") == null) {
-                if (authenticateConnection(message, session)) {
-                    WebSocketResponse response = new WebSocketResponse(
-                        true, AUTHENTICATION
-                    );
-                    session.getBasicRemote().sendText(gson.toJson(response));
-                }
-                else {
-                    WebSocketResponse response = new WebSocketResponse(
-                        false, AUTHENTICATION
-                    );
-                    session.getBasicRemote().sendText(gson.toJson(response));
+                if (!WebSocketUtil.authenticate(message, session)) {
                     close(session, courseId);
                 }
             }
@@ -83,10 +69,10 @@ public class StudyGroupsWS {
      */
     @OnClose
     public void close(Session session, @PathParam("courseId") Integer courseId) {
-        Vector<Session> sessionVector = sessionVectors.get(courseId);
+        Vector<Session> sessionVector = StudyGroupsWS.sessionVectors.get(courseId);
         sessionVector.remove(session);
         if (sessionVector.size() == 0) {
-            sessionVectors.remove(courseId);
+            StudyGroupsWS.sessionVectors.remove(courseId);
         }
     }
 
@@ -96,7 +82,7 @@ public class StudyGroupsWS {
     }
 
     public static void broadcastRefresh(int courseId) throws IOException {
-        Vector<Session> sessionVector = sessionVectors.get(courseId);
+        Vector<Session> sessionVector = StudyGroupsWS.sessionVectors.get(courseId);
         if (sessionVector == null) {
             // No one connected so don't broadcast (otherwise null ptr exception)
             return;
@@ -107,19 +93,6 @@ public class StudyGroupsWS {
             );
             s.getBasicRemote().sendText(gson.toJson(response));
         }
-    }
-
-    /**
-     * When the connection is opened, the frontend should send the auth token
-     *
-     * @param authToken token to authenticate user with
-     * @param session session user will belong to
-     * @return true if valid user
-     */
-    private boolean authenticateConnection(String authToken, Session session) {
-        User user = User.lookUpByAuthToken(authToken);
-        session.getUserProperties().put("user", user);
-        return user != null;
     }
 
     /**
