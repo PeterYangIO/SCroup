@@ -4,6 +4,7 @@ import util.SQLConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
@@ -368,5 +369,44 @@ public class StudyGroup {
         }
 
         return success;
+    }
+
+    public static ArrayList<HashMap<String, String>> getStudyGroupInfo(String id) {
+        ArrayList<HashMap<String, String>> info = new ArrayList<>();
+
+        SQLConnection sql = new SQLConnection();
+        try {
+            PreparedStatement statement = sql.prepareStatement(
+                    "SELECT users.firstName, users.lastName, courses.department, courses.number, courses.name " +
+                            "FROM studygroups " +
+                            "INNER JOIN users " +
+                            "ON users.id = studygroups.ownerId " +
+                            "INNER JOIN joinedgroups " +
+                            "ON joinedgroups.groupId = studygroups.id " +
+                            "INNER JOIN courses " +
+                            "ON courses.id = studygroups.courseId " +
+                            "WHERE userId = ?;"
+            );
+            statement.setInt(1, Integer.parseInt(id));
+            sql.setStatement(statement);
+            sql.executeQuery();
+            ResultSet results = sql.getResults();
+            while (results.next()) {
+                HashMap<String, String> temp = new HashMap<>();
+                temp.put("name", results.getString(1) + " " + results.getString(2));
+                temp.put("deparment", results.getString(3));
+                temp.put("courseNumber", results.getString(4));
+                temp.put("courseName", results.getString(5));
+                info.add(temp);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            sql.close();
+        }
+
+        return info;
     }
 }

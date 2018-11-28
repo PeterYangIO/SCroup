@@ -17,16 +17,16 @@ import java.util.ArrayList;
 public class Event extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         models.Event event = new Gson().fromJson(request.getReader(), models.Event.class);
-        if (!event.insertEvent()) {
+        String groupId = request.getParameter("id");
+        if (!event.insertEvent(groupId)) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String test = request.getParameter("id");
-        System.out.println(test);
-        ArrayList<models.Event> events = models.Event.getEvent(1);
+        String groupId = request.getParameter("id");
+        ArrayList<models.Event> events = models.Event.getEvent(groupId);
         System.out.println(events.toString());
         Gson gson = new Gson();
         response.setContentType("application/json");

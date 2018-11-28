@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -66,6 +67,10 @@ public class StudyGroups extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (request.getParameter("GetGroupInfo") != null) {
+            getGroupInfo(request, response, request.getParameter("GetGroupInfo"));
+            return;
+        }
         Map<String, String> filterParams = request.getParameterMap()
             .entrySet()
             .stream()
@@ -85,5 +90,18 @@ public class StudyGroups extends HttpServlet {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").create();
         response.setContentType("application/json");
         response.getWriter().print(gson.toJson(studyGroups));
+    }
+
+    private void getGroupInfo(HttpServletRequest request, HttpServletResponse response, String id) {
+        ArrayList<HashMap<String, String>> info = StudyGroup.getStudyGroupInfo(id);
+        System.out.println(info.toString());
+        Gson gson = new Gson();
+        response.setContentType("application/json");
+        try {
+            response.getWriter().print(gson.toJson(info));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }
