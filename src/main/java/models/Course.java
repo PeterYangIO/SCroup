@@ -108,7 +108,7 @@ public class Course {
             PreparedStatement statement = sql.prepareStatement(
                 "INSERT INTO courses " +
                     "(department, number, name) " +
-                    "VALUES (?, ?, ?,)"
+                    "VALUES (?, ?, ?)"
             );
             statement.setString(1, this.department);
             statement.setInt(2, this.number);
