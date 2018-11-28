@@ -6,7 +6,6 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 import Paper from '@material-ui/core/Paper';
 import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
@@ -175,8 +174,8 @@ class Events extends Component {
                     })}
                 </div>
                 <div>
-                    <Button variant="fab" color="primary" aria-label="Add" className={classes.addButton} onClick={this.handleOpen}>
-                        <AddIcon />
+                    <Button variant="raised" color="primary" aria-label="Add" className={classes.addButton} onClick={this.handleOpen}>
+                        Create Event
                     </Button>
                 </div>
                 <Modal

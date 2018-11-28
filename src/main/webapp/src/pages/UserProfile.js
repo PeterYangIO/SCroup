@@ -31,7 +31,6 @@ class UserProfile extends React.Component {
     }
 
     getGroup = () => {
-        console.log("here");
         fetch("http://localhost:8080/api/study-groups?GetGroupInfo=" + JSON.parse(sessionStorage.getItem("user")).id)
             .then(res => res.json())
             .then(
@@ -45,7 +44,6 @@ class UserProfile extends React.Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.state.info);
         return (
             <div>
                 <HeaderBar title="Login" />
