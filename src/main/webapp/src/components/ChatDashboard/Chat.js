@@ -8,9 +8,10 @@ import Icon from '@material-ui/core/Icon';
 import Button  from '@material-ui/core/Button';
 import Typography  from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
-
-
-
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardContent from "@material-ui/core/CardContent";
+import Divider from "@material-ui/core/Divider";
 
 const styles = theme => ({
     chatBoard: {
@@ -22,9 +23,22 @@ const styles = theme => ({
         marginTop: 27
     },
     messages: {
-        width: 600,
         marginBottom: 10,
-        marginLeft: 10
+        marginLeft: 10,
+        right: 0,
+        textAlign: "right"
+    },
+    card: {
+        maxWidth: 345,
+        marginTop: 10,
+        marginRight: 10
+    },
+    font: {
+        fontSize: 10
+    },
+    height: {
+        paddingTop: 10,
+        paddingBottom: 10
     }
 });
 
@@ -36,9 +50,40 @@ class Chat extends Component {
 
         this.state = {
             messageText: '',
-            messages: []
+            messages: [],
+            websocket: null,
+            user: ""
         }
     }
+
+    componentDidMount() {
+        const u = JSON.parse(sessionStorage.getItem("user"));
+        this.setState({
+            user: u.firstName + " " + u.lastName
+        });
+        this.connectToWebSocket();
+    }
+
+
+    connectToWebSocket = () => {
+        const webSocket = new WebSocket(`ws://${window.location.host}/chat-message/${this.props.groupId}`);
+        webSocket.onopen = () => {
+            webSocket.send(sessionStorage.getItem("authToken"));
+        };
+
+        webSocket.onmessage = async (m) => {
+            const data = JSON.parse(m.data);
+            if (data.message !== "AUTHENTICATION") {
+                this.setState({messages: this.state.messages.concat({
+                        "name" : data.username,
+                        "message" : data.message
+                    })});
+            }
+        };
+        this.setState({
+            websocket: webSocket
+        });
+    };
 
     handleOnChange(e) {
         this.setState({messageText: e.target.value});
@@ -46,21 +91,55 @@ class Chat extends Component {
 
     handleOnSubmit(e) {
         e.preventDefault();
-        this.setState({messages: this.state.messages.concat(this.state.messageText).reverse()})
+        this.state.websocket.send(this.state.messageText);
     }
 
     render() {
         const { classes } = this.props;
+        console.log(this.state.user);
         return (
             <div>
                 <Paper className={classes.chatBoard}>
                     {this.state.messages.map(e => {
                         return (
-                            <Paper className={classes.messages} key={e}>
-                                <Typography variant="h6">
-                                    {e}
-                                </Typography>
-                            </Paper>
+                            <Grid container>
+                                <Grid item xs={2} sm={3}>
+                                    {e.name !== this.state.user &&
+                                        <Card className={classes.card}>
+                                            <CardActionArea>
+                                                <CardContent>
+                                                    <Typography component="p">{e.message}</Typography>
+                                                </CardContent>
+                                                <Divider/>
+                                                <CardContent className={classes.height}>
+                                                    <Typography component="p" className={classes.font}>
+                                                        {e.name}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                    }
+                                </Grid>
+                                <Grid item xs={2} sm={3} />
+                                <Grid item xs={2} sm={3} />
+                                <Grid item xs={2} sm={3}>
+                                    {e.name === this.state.user &&
+                                        <Card className={classes.card}>
+                                            <CardActionArea>
+                                                <CardContent>
+                                                    <Typography component="p">{e.message}</Typography>
+                                                </CardContent>
+                                                <Divider/>
+                                                <CardContent className={classes.height}>
+                                                    <Typography component="p" className={classes.font}>
+                                                        {e.name}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                    }
+                                </Grid>
+                            </Grid>
                         );
                     })}
                 </Paper>

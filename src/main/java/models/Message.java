@@ -7,11 +7,13 @@ import util.SQLConnection;
 
 public class Message {
 	private int userid;
+	private String username;
 	private int groupid;
 	private String message;
 	
-	public Message(int userid, int groupid, String message) {
+	public Message(int userid, String username, int groupid, String message) {
 		this.userid = userid;
+		this.username = username;
 		this.groupid = groupid;
 		this.message = message;
 	}

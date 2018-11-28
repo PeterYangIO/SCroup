@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 
-@ServerEndpoint(value="/study-groups/{groupId}")
+@ServerEndpoint(value="/chat-message/{groupId}")
 public class ChatMessageWS {
     private static final String AUTHENTICATION = "AUTHENTICATION";
     private static final Gson gson = new Gson();
@@ -65,7 +65,8 @@ public class ChatMessageWS {
                 }
             }
             else {
-                Message m = new Message(((User)session.getUserProperties().get("user")).getID(), groupId, message);
+                User u = (User)session.getUserProperties().get("user");
+                Message m = new Message(u.getID(), u.getFullName(), groupId, message);
                 m.insertToDatabase();
               	processMessage(m, session, groupId);
             }
