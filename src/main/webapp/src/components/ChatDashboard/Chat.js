@@ -54,9 +54,9 @@ class Chat extends Component {
         return (
             <div>
                 <Paper className={classes.chatBoard}>
-                    {this.state.messages.map(e => {
+                    {this.state.messages.map((e, i) => {
                         return (
-                            <Paper className={classes.messages} key={e}>
+                            <Paper className={classes.messages} key={i}>
                                 <Typography variant="h6">
                                     {e}
                                 </Typography>

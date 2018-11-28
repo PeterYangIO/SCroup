@@ -108,6 +108,7 @@ export default class CreateFab extends React.Component {
                             <StudyGroupForm
                                 innerRef={this.studyGroupFormRef}
                                 departments={this.props.departments}
+                                courseId={this.state.courseId}
                                 submit={this.submitChildData}/>
                         }
                     </DialogContent>

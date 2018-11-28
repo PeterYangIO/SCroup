@@ -93,7 +93,9 @@ export default class Home extends React.Component {
             departments: undefined,
             selectedCourse: undefined,
             openedDepartment: -1
-        }
+        };
+
+        this.searchTimeout = undefined;
     }
 
     async componentDidMount() {
@@ -125,9 +127,12 @@ export default class Home extends React.Component {
     };
 
     handleSearch = (event) => {
+        clearTimeout(this.searchTimeout);
+
         this.setState({
             query: event.target.value
-        }, this.getData);
+        });
+        this.searchTimeout = setTimeout(this.getData, 500);
     };
 
     openDepartment = (departmentId) => {
