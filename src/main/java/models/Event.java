@@ -23,14 +23,14 @@ public class Event {
         this.groupId = groupId;
     }
 
-    public static ArrayList<Event> getEvent(int groupId) {
+    public static ArrayList<Event> getEvent(String groupId) {
         ArrayList<Event> events = new ArrayList<>();
         SQLConnection sql = new SQLConnection();
         try {
             PreparedStatement statement = sql.prepareStatement(
                     "SELECT * FROM events WHERE group_id=?"
             );
-            statement.setInt(1, groupId);
+            statement.setInt(1, Integer.parseInt(groupId));
             sql.setStatement(statement);
             sql.executeQuery();
             ResultSet results = sql.getResults();
@@ -55,7 +55,7 @@ public class Event {
         return events;
     }
 
-    public boolean insertEvent() {
+    public boolean insertEvent(String id) {
         boolean success = true;
         SQLConnection sql = new SQLConnection();
         try {
