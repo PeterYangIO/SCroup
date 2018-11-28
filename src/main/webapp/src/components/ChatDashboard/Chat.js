@@ -17,24 +17,27 @@ const styles = theme => ({
     chatBoard: {
         marginTop: 20,
         height: 570,
+        overflowY: 'scroll',
         backgroundColor: cyan[50],
     },
     submitButton: {
         marginTop: 27
     },
-    messages: {
-        marginBottom: 10,
-        marginLeft: 10,
-        right: 0,
-        textAlign: "right"
-    },
     card: {
         maxWidth: 345,
         marginTop: 10,
-        marginRight: 10
+        marginRight: 10,
+    },
+    card2: {
+        maxWidth: 345,
+        marginTop: 10,
+        marginLeft: 10
     },
     font: {
         fontSize: 10
+    },
+    leftText: {
+        textAlign: 'right'
     },
     height: {
         paddingTop: 10,
@@ -92,6 +95,9 @@ class Chat extends Component {
     handleOnSubmit(e) {
         e.preventDefault();
         this.state.websocket.send(this.state.messageText);
+        this.setState({
+            messageText : ""
+        })
     }
 
     render() {
@@ -105,7 +111,7 @@ class Chat extends Component {
                             <Grid container>
                                 <Grid item xs={2} sm={3}>
                                     {e.name !== this.state.user &&
-                                        <Card className={classes.card}>
+                                        <Card className={classes.card2}>
                                             <CardActionArea>
                                                 <CardContent>
                                                     <Typography component="p">{e.message}</Typography>
@@ -126,12 +132,12 @@ class Chat extends Component {
                                     {e.name === this.state.user &&
                                         <Card className={classes.card}>
                                             <CardActionArea>
-                                                <CardContent>
+                                                <CardContent className={classes.leftText}>
                                                     <Typography component="p">{e.message}</Typography>
                                                 </CardContent>
                                                 <Divider/>
                                                 <CardContent className={classes.height}>
-                                                    <Typography component="p" className={classes.font}>
+                                                    <Typography component="p" className={`${classes.font} ${classes.leftText}`}>
                                                         {e.name}
                                                     </Typography>
                                                 </CardContent>
