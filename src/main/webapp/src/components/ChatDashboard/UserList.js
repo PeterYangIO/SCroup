@@ -24,8 +24,40 @@ const styles = theme => ({
 });
 
 class UserList extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            users: []
+        }
+    }
+
+    componentDidMount() {
+        this.getUsers();
+    }
+
+    getUsers = () => {
+        fetch("http://localhost:8080/api/join-group?groupId=" + this.props.groupId)
+            .then(res => res.json())
+            .then(
+                (res) => {
+                    console.log(res);
+                    const users = [];
+                    res.forEach(el => {
+                        users.push({
+                            name: el.firstName + ' ' + el.lastName
+                        })
+                    });
+                    this.setState({
+                        users: this.state.users.concat(users)
+                    })
+                }
+            )
+    };
+
     render() {
         const { classes } = this.props;
+        console.log(this.state.users);
         return (
             <Paper className={classes.leftContainer}>
                 <div>
@@ -35,18 +67,13 @@ class UserList extends Component {
                 </div>
                 <div className={classes.overflow}>
                     <List>
-                        <ListItem dense button>
-                            <ListItemText className={classes.users}>Nhan Tran</ListItemText>
-                        </ListItem>
-                        <ListItem dense button>
-                            <ListItemText className={classes.users}>Marisa Eng</ListItemText>
-                        </ListItem>
-                        <ListItem dense button>
-                            <ListItemText className={classes.users}>Catherine Mai</ListItemText>
-                        </ListItem>
-                        <ListItem dense button>
-                            <ListItemText className={classes.users}>Jesus Ojeda</ListItemText>
-                        </ListItem>
+                        {this.state.users.map(el => {
+                            return(
+                                <ListItem dense button key={el.name}>
+                                    <ListItemText className={classes.users}>{el.name}</ListItemText>
+                                </ListItem>
+                            );
+                        })}
                     </List>
                 </div>
             </Paper>

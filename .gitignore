@@ -16,3 +16,6 @@ src/main/webapp/static/js
 web/META-INF/
 /target/
 bin/
+
+# Mac
+*.DS_Store
