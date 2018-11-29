@@ -81,7 +81,6 @@ INSERT INTO scroup.joinedgroups (id, userId, groupId) VALUES (2, 2, 2);
 INSERT INTO scroup.joinedgroups (id, userId, groupId) VALUES (3, 3, 3);
 INSERT INTO scroup.joinedgroups (id, userId, groupId) VALUES (4, 4, 4);
 
-
 CREATE TABLE messages (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   user_id INT NOT NULL,
