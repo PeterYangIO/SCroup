@@ -459,6 +459,8 @@ public class User {
 		return this.major;
 	}
 
+	public String getFullName(){ return this.firstName + " " + this.lastName;}
+
 	public int getYear() {
 		return this.year;
 	}

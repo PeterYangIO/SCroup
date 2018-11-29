@@ -26,7 +26,7 @@ class GroupList extends React.Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.props.info);
+
         return (
             <Card className={classes.info}>
                 <div>

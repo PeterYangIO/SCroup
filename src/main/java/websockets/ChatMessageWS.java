@@ -53,7 +53,8 @@ public class ChatMessageWS {
                 }
             }
             else {
-                Message m = new Message(((User)session.getUserProperties().get("user")).getID(), groupId, message);
+                User u = (User)session.getUserProperties().get("user");
+                Message m = new Message(u.getID(), u.getFullName(), groupId, message);
                 m.insertToDatabase();
               	processMessage(m, groupId);
             }

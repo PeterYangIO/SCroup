@@ -77,8 +77,8 @@ CREATE TABLE events (
   group_id INT NOT NULL,
   title VARCHAR(128) NOT NULL,
   location VARCHAR(128) NOT NULL,
-  start TIMESTAMP NOT NULL,
-  end TIMESTAMP NOT NULL,
+  date VARCHAR(45) NOT NULL,
+  time VARCHAR(45) NOT NULL,
 
   FOREIGN KEY (group_id) REFERENCES studyGroups (id)
 );
