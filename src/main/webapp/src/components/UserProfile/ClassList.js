@@ -23,6 +23,7 @@ class ClassList extends React.Component {
 
     render() {
         const { classes } = this.props;
+        const uniqueClasses = [];
 
         return (
             <Card className={classes.info}>
@@ -34,9 +35,14 @@ class ClassList extends React.Component {
                 <div>
                     <List>
                         {this.props.info && this.props.info.length > 0 && this.props.info.map(el => {
+                            const className = `${el.department} ${el.courseNumber} - ${el.courseName}`;
+                            if (uniqueClasses.includes(className)) {
+                                return;
+                            }
+                            uniqueClasses.push(className);
                             return (
                                 <ListItem dense key={el.id}>
-                                    <ListItemText className={classes.centerText}>{el.department + " " + el.courseNumber + " - " + el.courseName}</ListItemText>
+                                    <ListItemText className={classes.centerText}>{className}</ListItemText>
                                 </ListItem>
                             );
                         })}

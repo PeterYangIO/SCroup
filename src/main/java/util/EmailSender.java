@@ -42,8 +42,6 @@ public class EmailSender extends Thread{
 
 			Transport.send(message);
 
-			System.out.println("Email sent");
-
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}

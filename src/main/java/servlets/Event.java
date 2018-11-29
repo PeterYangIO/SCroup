@@ -1,7 +1,6 @@
 package servlets;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -27,18 +26,8 @@ public class Event extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String groupId = request.getParameter("id");
         ArrayList<models.Event> events = models.Event.getEvent(groupId);
-        System.out.println(events.toString());
         Gson gson = new Gson();
         response.setContentType("application/json");
         response.getWriter().print(gson.toJson(events));
     }
-
-//    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        String method = request.getMethod();
-//        if (method.equals("GET")) {
-//            this.doGet(request, response);
-//        } else if (method.equals("POST")) {
-//            this.doPost(request,response);
-//        }
-//    }
 }

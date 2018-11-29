@@ -442,6 +442,7 @@ export default class StudyGroups extends React.Component {
                                         </Button>
                                     }
                                     <Button color="primary" size="small"
+                                            disabled={!item.joined && item.capacity === item.size}
                                             onClick={() => this.toggleJoin(item.id, item.joined)}>
                                         {item.joined ? "Leave" : "Join"}
                                     </Button>

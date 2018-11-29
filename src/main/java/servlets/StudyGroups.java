@@ -94,7 +94,6 @@ public class StudyGroups extends HttpServlet {
 
     private void getGroupInfo(HttpServletRequest request, HttpServletResponse response, String id) {
         ArrayList<HashMap<String, String>> info = StudyGroup.getStudyGroupInfo(id);
-        System.out.println(info.toString());
         Gson gson = new Gson();
         response.setContentType("application/json");
         try {

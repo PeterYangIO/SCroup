@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import moment from "moment";
 
 const styles = theme => ({
     addButton: {
@@ -58,8 +59,8 @@ class Events extends Component {
             events: [],
             eventTitle: '',
             eventLocation: '',
-            date: null,
-            time: null
+            date: moment().format("YYYY-MM-DD"),
+            time: "19:00"
         }
     }
 
@@ -165,7 +166,7 @@ class Events extends Component {
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
                                     <Grid container>
-                                        <Grid item sm={6}>{e.date + " - " + e.time}</Grid>
+                                        <Grid item sm={6}>{moment(`${e.date}T${e.time}`).format("M/DD h:mma")}</Grid>
                                         <Grid item sm={6}>{e.location}</Grid>
                                     </Grid>
                                 </ExpansionPanelDetails>
