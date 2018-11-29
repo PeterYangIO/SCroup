@@ -41,9 +41,7 @@ class GroupList extends React.Component {
                                 <ListItem dense button key={el.id} component={Link} to={`/dashboard/${el.id}`}>
                                     <ListItemText
                                         className={classes.centerText}
-                                        primary={`${el.name}'s Group (${el.department} ${el.courseNumber})`}
-                                        secondary={`${moment(el.start).format("M/D, h:mma")} – ${moment(el.end).format("h:mma")}`}
-                                    />
+                                        primary={`${el.name}'s Group (${el.department} ${el.courseNumber})`}/>
                                 </ListItem>
                             );
                         })}
