@@ -59,10 +59,10 @@ CREATE TABLE studygroups (
 );
 
 # Create prefilled data
-INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (1, 3002, 1, 4, 1, 'Online', 0, 'Miller', '2018-12-01 03:00:00', '2018-12-01 06:00:00');
-INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (2, 3002, 2, 6, 1, 'SAL 126', 1, 'Miller', '2018-12-01 00:00:00', '2018-12-01 01:00:00');
-INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (3, 3002, 3, 1, 1, 'GFS 116', 2, 'Miller', '2018-12-01 04:00:00', '2018-12-01 06:00:00');
-INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (4, 3002, 4, 0, 1, 'Leavey Library', 4, 'Miller', '2018-12-08 03:00:00', '2018-12-08 06:00:00');
+INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (1, 3002, 1, 4, 1, 'Online', 0, 'Miller', '2018-11-30 19:00:00', '2018-11-30 22:00:00');
+INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (2, 3002, 2, 6, 1, 'SAL 126', 1, 'Miller', '2018-11-30 16:00:00', '2018-11-30 18:00:00');
+INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (3, 3002, 3, 1, 1, 'GFS 116', 2, 'Miller', '2018-11-30 20:00:00', '2018-12-01 22:00:00');
+INSERT INTO scroup.studygroups (id, courseId, ownerId, capacity, size, location, topic, professor, start, end) VALUES (4, 3002, 4, 0, 1, 'Leavey Library', 4, 'Miller', '2018-12-07 19:00:00', '2018-12-07 22:00:00');
 
 SET time_zone="+00:00";
 

@@ -20,7 +20,7 @@ public class SQLConnection {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
                 String.format(
-                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+                    "jdbc:mysql://localhost:3306/%s?user=%s&password=%s&useSSL=false&allowPublicKeyRetrieval=true",
                     SCHEMA, USER, PASSWORD
                 )
             );
