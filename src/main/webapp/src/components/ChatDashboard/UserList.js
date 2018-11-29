@@ -67,9 +67,9 @@ class UserList extends Component {
                 </div>
                 <div className={classes.overflow}>
                     <List>
-                        {this.state.users.map(el => {
+                        {this.state.users.map((el, id)=> {
                             return(
-                                <ListItem dense button key={el.name}>
+                                <ListItem dense key={id}>
                                     <ListItemText className={classes.users}>{el.name}</ListItemText>
                                 </ListItem>
                             );

@@ -377,7 +377,7 @@ public class StudyGroup {
         SQLConnection sql = new SQLConnection();
         try {
             PreparedStatement statement = sql.prepareStatement(
-                    "SELECT users.firstName, users.lastName, courses.department, courses.number, courses.name " +
+                    "SELECT users.firstName, users.lastName, courses.department, courses.number, courses.name, studygroups.id " +
                             "FROM studygroups " +
                             "INNER JOIN users " +
                             "ON users.id = studygroups.ownerId " +
@@ -394,9 +394,10 @@ public class StudyGroup {
             while (results.next()) {
                 HashMap<String, String> temp = new HashMap<>();
                 temp.put("name", results.getString(1) + " " + results.getString(2));
-                temp.put("deparment", results.getString(3));
+                temp.put("department", results.getString(3));
                 temp.put("courseNumber", results.getString(4));
                 temp.put("courseName", results.getString(5));
+                temp.put("id", Integer.toString(results.getInt(6)));
                 info.add(temp);
             }
         }

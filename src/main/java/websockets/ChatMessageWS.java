@@ -3,7 +3,6 @@ package websockets;
 import com.google.gson.Gson;
 import models.Message;
 import models.User;
-import models.WebSocketResponse;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -15,7 +14,6 @@ import java.util.Vector;
 
 @ServerEndpoint(value="/chat-message/{groupId}")
 public class ChatMessageWS {
-    private static final String AUTHENTICATION = "AUTHENTICATION";
     private static final Gson gson = new Gson();
 
     private static HashMap<Integer, Vector<Session>> sessionVectors = new HashMap<>();
@@ -27,13 +25,13 @@ public class ChatMessageWS {
      */
     @OnOpen
     public void open(Session session, @PathParam("groupId") Integer groupId) {
-        if (sessionVectors.get(groupId) == null) {
+        if (ChatMessageWS.sessionVectors.get(groupId) == null) {
             Vector<Session> sessionVector = new Vector<>();
             sessionVector.add(session);
-            sessionVectors.put(groupId, sessionVector);
+            ChatMessageWS.sessionVectors.put(groupId, sessionVector);
         }
         else {
-            sessionVectors.get(groupId).add(session);
+            ChatMessageWS.sessionVectors.get(groupId).add(session);
         }
     }
 
@@ -50,17 +48,7 @@ public class ChatMessageWS {
     public void onMessage(String message, Session session, @PathParam("groupId") Integer groupId) {
         try {
             if (session.getUserProperties().get("user") == null) {
-                if (authenticateConnection(message, session)) {
-                    WebSocketResponse response = new WebSocketResponse(
-                        true, AUTHENTICATION
-                    );
-                    session.getBasicRemote().sendText(gson.toJson(response));
-                }
-                else {
-                    WebSocketResponse response = new WebSocketResponse(
-                        false, AUTHENTICATION
-                    );
-                    session.getBasicRemote().sendText(gson.toJson(response));
+                if (!WebSocketUtil.authenticate(message, session)) {
                     close(session, groupId);
                 }
             }
@@ -68,7 +56,7 @@ public class ChatMessageWS {
                 User u = (User)session.getUserProperties().get("user");
                 Message m = new Message(u.getID(), u.getFullName(), groupId, message);
                 m.insertToDatabase();
-              	processMessage(m, session, groupId);
+              	processMessage(m, groupId);
             }
         }
         catch (IOException ioe) {
@@ -83,10 +71,10 @@ public class ChatMessageWS {
      */
     @OnClose
     public void close(Session session, @PathParam("groupId") Integer groupId) {
-        Vector<Session> sessionVector = sessionVectors.get(groupId);
+        Vector<Session> sessionVector = ChatMessageWS.sessionVectors.get(groupId);
         sessionVector.remove(session);
         if (sessionVector.size() == 0) {
-            sessionVectors.remove(groupId);
+            ChatMessageWS.sessionVectors.remove(groupId);
         }
     }
 
@@ -94,24 +82,11 @@ public class ChatMessageWS {
     public void error(Throwable error) {
         System.out.println(error.toString());
     }
-
-    /**
-     * When the connection is opened, the frontend should send the auth token
-     *
-     * @param authToken token to authenticate user with
-     * @param session session user will belong to
-     * @return true if valid user
-     */
-    private boolean authenticateConnection(String authToken, Session session) {
-        User user = User.lookUpByAuthToken(authToken);
-        session.getUserProperties().put("user", user);
-        return user != null;
-    }
   
-  	private void processMessage(Message message, Session session ,int groupId) {
+  	private void processMessage(Message message, int groupId) {
       // 1. Put message into database
       // 2. Broadcast message to everyone connected
-      Vector<Session> sessionVector = sessionVectors.get(groupId);
+      Vector<Session> sessionVector = ChatMessageWS.sessionVectors.get(groupId);
         if (sessionVector == null) {
             // No one connected so don't broadcast (otherwise null ptr exception)
             return;

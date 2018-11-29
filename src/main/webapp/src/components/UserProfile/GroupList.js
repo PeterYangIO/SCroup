@@ -5,6 +5,8 @@ import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import {Link} from "react-router-dom";
+import moment from "moment";
 
 
 const styles = theme => ({
@@ -36,8 +38,12 @@ class GroupList extends React.Component {
                     <List>
                         {this.props.info && this.props.info.length > 0 && this.props.info.map (el => {
                             return (
-                                <ListItem dense button key={el.name}>
-                                    <ListItemText className={classes.centerText}>{el.name + "'s Group (" + el.deparment + " " + el.courseNumber + ")"}</ListItemText>
+                                <ListItem dense button key={el.id} component={Link} to={`/dashboard/${el.id}`}>
+                                    <ListItemText
+                                        className={classes.centerText}
+                                        primary={`${el.name}'s Group (${el.department} ${el.courseNumber})`}
+                                        secondary={`${moment(el.start).format("M/D, h:mma")} – ${moment(el.end).format("h:mma")}`}
+                                    />
                                 </ListItem>
                             );
                         })}

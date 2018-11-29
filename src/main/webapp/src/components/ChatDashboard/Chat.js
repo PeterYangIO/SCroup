@@ -106,7 +106,7 @@ class Chat extends Component {
         return (
             <div>
                 <Paper className={classes.chatBoard}>
-                    {this.state.messages.map(e => {
+                    {this.state.messages.map((e, i) => {
                         return (
                             <Grid container>
                                 <Grid item xs={2} sm={3}>

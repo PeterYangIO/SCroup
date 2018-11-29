@@ -35,8 +35,8 @@ class ClassList extends React.Component {
                     <List>
                         {this.props.info && this.props.info.length > 0 && this.props.info.map(el => {
                             return (
-                                <ListItem dense button key={el.name}>
-                                    <ListItemText className={classes.centerText}>{el.deparment + " " + el.courseNumber + " - " + el.courseName}</ListItemText>
+                                <ListItem dense key={el.id}>
+                                    <ListItemText className={classes.centerText}>{el.department + " " + el.courseNumber + " - " + el.courseName}</ListItemText>
                                 </ListItem>
                             );
                         })}

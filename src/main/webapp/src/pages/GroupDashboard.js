@@ -15,8 +15,6 @@ const styles = theme => ({
 class GroupDashboard extends React.Component {
     render() {
         const { classes } = this.props;
-        // this is the group id
-        console.log(this.props.match.params.id);
         return (
             <>
                 <HeaderBar title="Login"/>

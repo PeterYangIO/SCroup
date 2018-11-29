@@ -105,7 +105,8 @@ export default class HeaderBar extends React.Component {
                                         }}
                                         open={accountMenuOpen}
                                         onClose={this.handleAccountMenuClose}>
-                                        <MenuItem onClick={this.handleAccountMenuClose}>Profile</MenuItem>
+                                        <MenuItem component={Link} to="/home">Home</MenuItem>
+                                        <MenuItem component={Link} to="/profile">Profile</MenuItem>
                                         <MenuItem onClick={this.logout}>Logout</MenuItem>
                                     </Menu>
                                 </div>
